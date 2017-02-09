@@ -1,0 +1,60 @@
+#Vychislit' srednee arifmeticheskoe 2 chisel
+a = int(input("1 choslo: "))
+b = int(input("2 choslo: "))
+print("Srednee arifmeticheskoe = ", (a + b) / 2)
+
+
+#Vychislenie kolichestva rabochih chasov v gody. Vvesti kolichestvo chasov v rabochem dne i kol-vo rab dnej v godu
+rabDnejVGody = int(input("Skolko rabochih dnej v godu?\n"))
+chasovVRabDne = int(input("Skolko chasov v rabochem dne?\n"))
+print("V godu", rabDnejVGody * chasovVRabDne, "rabochih chasov")
+
+
+#Pereschet kilometrov v mili
+km = float(input("Vvedite kilometry: "))
+print(km, "km = ", km / 1.609, "mil'")
+
+
+#Vychislit' ploshad' kruga
+PI = 3.14
+r = float(input("Vvedite radius kruga(sm): "))
+print("Ploshad' kruga = ", PI * r * r, "sm")
+
+
+#Vychislit' zarplatu rabochego za X dnej, esli on poluchaet fiksirovannyj zarobotok za 1 den'
+ZAROBOTOK_V_DEN = int(input("Skolko poluchat rabochij v den'($)?\n"))
+x = int(input("Skolko dnej rabotal?\n"))
+print("Zarplata rabochego za ", x ,"dnej = ", ZAROBOTOK_V_DEN * x, "$")
+
+
+#Shitat' radius kruga i napechatat' diametr, ploshad' i dlinnu okr kruga
+PI = 3.14
+r = float(input("Vvedite radius kruga(sm): "))
+print("diametr kruga = ", r * 2, "sm\nploshad' = ", PI * r * r, "sm\ndlinna okr = ", 2 * PI * r, "sm")
+
+
+#Na vhod programmy podaetsja 0 ili 1. eslo vvedeno 1 to vavesti 0, esli 0 to vyvesty 1.
+a = int(input("Vvedite chislo(0 ili 1): "))
+if (a == 1): print(0)
+else: print(1)
+
+
+#Zaprosit' u polzovatelja 3 chisla. Najti summu 1 i 3 chisla. Najti proizvedenie summy iz punkta 'a' na 2 chislo
+#Najti srednee arifmeticheskoe 3 chisel
+a = int(input("Vvedite 3 chisla.\nchislo 1: "))
+b = int(input("chislo 2: "))
+c = int(input("chislo 3: "))
+print("Summa 1 i 3 chilsa = ", a + c, "\nProizvedenije summy 1 i 3 chisla s 2 chislom = ", (a + c) * b,
+      "\nSrednee arifmeticheskoe treh chisel = ", (a + b + c) / 3)
+
+
+#Na koncerte pevicy bylo A % otdyhajushih v sanatorii, na vystuplenii hora d 1.5 raz bolshe.
+#Skolko zritelej pobyvalo na etih koncertah v obshem, esli v sanatorii otdyhalo x chelovek.
+x = int(input("Skolko chelovek otdyhalo v sanatorii?\n"))
+a = int(input("kakoj procent zritele prishel na koncert pevicy?\n"))
+print("Na koncert pevicy prislo ", int(x * a / 100) ,"zritelej\nNa koncert hora ", int(1.5 * x * a / 100), "zritelej\nVsego: ",
+<<<<<<< HEAD
+      int(x * a / 100 * 2.5), "zritelej")
+=======
+      int(x * a / 100 * 2.5), "zritelej")
+>>>>>>> origin/master
