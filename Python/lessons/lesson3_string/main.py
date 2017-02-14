@@ -38,3 +38,11 @@ print("\t" * 6, "«Что ж мы?" + " на зимние квартиры?\n", 
 print("\t" * 6, "Чужие изорвать мундиры,\n", "\t" * 7, "О русские штыки?»\n")
 
 input("Press Enter to continue...")
+
+print("Hello!")
+password = input("Enter your password: ")
+if password == "bond":
+    print("Welcom to system")
+else:
+    print("Fuck off!")
+input("Press Enter to continue...")
