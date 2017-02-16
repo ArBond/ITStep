@@ -1,14 +1,13 @@
-# Three Year-Old Simulator
-# Demonstrates the while loop
+# Демонстрация цикла while
+# Игра "Любопытный малыш"
 
-print("\tWelcome to the 'Three-Year-Old Simulator'\n")
-print("This program simulates a conversation with a three-year-old child.")
-print("Try to stop the madness.\n")
+print("\tДобро Пожаловать в симулятор 'Любопытный малыш'\n")
+print("Попробуйте остановить этот кошмар\n")
 
-response = ""
-while response != "Because.":
-    response = input("Why?\n")
+#response = " "
+while response != "потому что":
+    response = input("Почему?\n")
 
-print("Oh.  Okay.")
+print("А, ну ладно....")
 
 input("\n\nPress the enter key to exit.")
