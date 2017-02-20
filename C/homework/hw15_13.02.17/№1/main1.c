@@ -10,8 +10,7 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#define ARRAY_SIZE 50
-#define BILSHE >
+#define ARRAY_SIZE 20
 
 void clearChar(char toContinue);
 void arraysFormat(int icqArray[], int phoneNubmersArray[], int arraysSize);
@@ -45,9 +44,16 @@ int main()
 			}
 			break;
 		case 2:
-			addUser(icqArray, phoneNubmersArray, firstFreeCellForRecording);
-			printf("Pol'zovatel' dobavlen.\n");
-			firstFreeCellForRecording++;
+			if (firstFreeCellForRecording < ARRAY_SIZE)
+			{
+				addUser(icqArray, phoneNubmersArray, firstFreeCellForRecording);
+				printf("Pol'zovatel' dobavlen.\n");
+				firstFreeCellForRecording++;
+			}
+			else
+			{
+				printf("Zakonchilas' pamjat'!\n");
+			}
 			break;
 		case 3:
 			if (firstFreeCellForRecording == 0)
@@ -150,7 +156,7 @@ void addUser(int icqArray[], int phoneNubmersArray[], int firstFreeCellForRecord
 void deleteUser(int icqArray[], int phoneNubmersArray[], int firstFreeCellForRecording)
 {
 	int selection;
-	printf("\nKakogo polzovatelja hotite udaliy'?\n");
+	printf("\nKakogo polzovatelja hotite udaliy'?\n# ");
 	scanf("%i", &selection);
 	while (selection > firstFreeCellForRecording || selection < 1)
 	{
