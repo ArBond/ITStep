@@ -21,6 +21,18 @@ void deleteUser(int icqArray[], int phoneNubmersArray[], int firstFreeCellForRec
 void sortByIcq(int icqArray[], int phoneNubmersArray[], int firstFreeCellForRecording);
 void sortByNumbers(int icqArray[], int phoneNubmersArray[], int firstFreeCellForRecording);
 
+enum Menu
+{
+	Exit = 0,
+	PrintArrays,
+	AddUser,
+	DeleteUser,
+	IcqSort,
+	PhoneSort,
+	Format,
+	End
+};
+
 int main()
 {
 	int icqArray[ARRAY_SIZE];
@@ -30,10 +42,10 @@ int main()
 	int forExit = 1;
 	while (forExit != 0)
 	{
-		int selection = printMenuAndSelectAction();
+		enum Menu selection = printMenuAndSelectAction();
 		switch (selection)
 		{
-		case 1:
+		case PrintArrays:
 			if (firstFreeCellForRecording == 0)
 			{
 				printf("Spisok pust!\n");
@@ -43,7 +55,7 @@ int main()
 				printArrays(icqArray, phoneNubmersArray, firstFreeCellForRecording);
 			}
 			break;
-		case 2:
+		case AddUser:
 			if (firstFreeCellForRecording < ARRAY_SIZE)
 			{
 				addUser(icqArray, phoneNubmersArray, firstFreeCellForRecording);
@@ -55,7 +67,7 @@ int main()
 				printf("Zakonchilas' pamjat'!\n");
 			}
 			break;
-		case 3:
+		case DeleteUser:
 			if (firstFreeCellForRecording == 0)
 			{
 				printf("Spisok pust!\n");
@@ -67,15 +79,15 @@ int main()
 				firstFreeCellForRecording--;
 			}
 			break;
-		case 4:
+		case IcqSort:
 			sortByIcq(icqArray, phoneNubmersArray, firstFreeCellForRecording);
 			printf("Spisok otsortirovan.\n");
 			break;
-		case 5:
+		case PhoneSort:
 			sortByNumbers(icqArray, phoneNubmersArray, firstFreeCellForRecording);
 			printf("Spisok otsortirovan.\n");
 			break;
-		case 6:
+		case Format:
 			printf("Vy tochno hotite otformatirovat' spisok?\n 1 - da\n 2 - net\n");
 			scanf("%i", &selection);
 			while (selection > 2 || selection < 1)
@@ -124,11 +136,11 @@ void arraysFormat(int icqArray[], int phoneNubmersArray[], int arraysSize)
 
 int printMenuAndSelectAction()
 {
-	printf("\tSpravochnik:\n\n 1 - vyvesti spisok polzovatelej\n 2 - dobavit' pol'zovatelja\n 3 - udalit' pol'zovatelja\n");
-	printf(" 4 - otsortirovat' po ICQ\n 5 - otsortirovat' po nomeram telefona\n 6 - otformatirovat' spisok\n 0 - vyjti\n");
+	printf("\tSpravochnik:\n\n %i - vyvesti spisok polzovatelej\n %i - dobavit' pol'zovatelja\n %i - udalit' pol'zovatelja\n", PrintArrays, AddUser, DeleteUser);
+	printf(" %i - otsortirovat' po ICQ\n %i - otsortirovat' po nomeram telefona\n %i - otformatirovat' spisok\n %i - vyjti\n", IcqSort, PhoneSort, Format, Exit);
 	int selection;
 	scanf("%i", &selection);
-	while (selection > 6 || selection < 0)
+	while (selection >= End || selection < 0)
 	{
 		printf("Error!\n");
 		scanf("%i", &selection);
