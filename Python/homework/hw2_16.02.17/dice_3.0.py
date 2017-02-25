@@ -15,7 +15,7 @@ if selection == 1:
     print("-Vozmozhnost' vzjat' kredit na kolichestvo do 5 hodov\n-Vozmozhnost' dosrochnogo pogashenije kredita\n"
           "-Vozmozhnost' sbezhat'\n -Pozvat' Kuvaldina!\n")
 
-gameSelection = int(input("Menu:\n  1 - igrat' odnomy\n  2 - igrat' s komp'juterom\n  3 - igrat' s drugom\n  0 - vyjti\n"))
+gameSelection = int(input("Menu:\n  1 - igrat' odnomu\n  2 - igrat' s komp'juterom\n  3 - igrat' s drugom\n  0 - vyjti\n"))
 while gameSelection > 3 or gameSelection < 0:
     gameSelection = int(input("Takogo varianta netu!\n # "))
 
@@ -60,7 +60,7 @@ if gameSelection == 1:
 
         if timeKredit > 1:
             timeKredit -= 1
-            print("Ostalos' hodov do oplaty kredita: ", timeKredit - 1)
+            print("Ostalos' hodov dlja oplaty kredita: ", timeKredit - 1)
             if gamerDeposit >= needToPay:
                 selection = int(input("Hotite pogasit' sejchas?\n 1 - da\n 0 - net\n"))
                 while selection > 1 or selection < 0:
@@ -323,3 +323,5 @@ elif gameSelection == 3:
 # выход
 else:
     print("Vsego horoshego!\n")
+
+input("Press Enter to continue")
