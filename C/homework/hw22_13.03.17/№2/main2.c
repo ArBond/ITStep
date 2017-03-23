@@ -3,10 +3,11 @@
 
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #define ARRAY_SIZE 51
 
-void isAnagram(char* userString, int stringLengh);
+bool isAnagram(char* userString, int stringLengh);
 int findStringLength(char* userString);
 
 void main()
@@ -19,7 +20,14 @@ void main()
 	} while (*userString == '\n');
 	printf("Your string: %s", userString);
 	int stringLengh = findStringLength(userString);
-	isAnagram(userString, stringLengh);
+	if (isAnagram(userString, stringLengh) == true)
+	{
+		printf("It's an anagram.\n");
+	}
+	else
+	{
+		printf("It's not an anagram.\n");
+	}
 }
 
 int findStringLength(char* userString)
@@ -32,7 +40,7 @@ int findStringLength(char* userString)
 	return stringLengh;
 }
 
-void isAnagram(char* userString, int stringLengh)
+bool isAnagram(char* userString, int stringLengh)
 {
 	int count = 0;
 	while (userString[count] == userString[stringLengh - 1 - count] || 
@@ -41,5 +49,5 @@ void isAnagram(char* userString, int stringLengh)
 	{
 		count++;
 	}
-	printf(count == stringLengh ? "It's an anagram.\n" : "It's not an anagram.\n");
+	return count == stringLengh;
 }

@@ -7,7 +7,7 @@
 #define STRING_SIZE 51
 
 int findStringLength(char* userString);
-void deleteSymbol(char* userString, int numberForDelete);
+void deleteSymbol(char* userString, int position);
 void clearChar();
 
 void main()
@@ -20,20 +20,20 @@ void main()
 	} while (userString[0] == '\n');
 	int stringLength = findStringLength(userString);
 	printf("Vasha stroka:\n%s", userString);
-	if (STRING_SIZE - 1 == stringLength)
+	if (stringLength == STRING_SIZE - 1)
 	{
 		clearChar();
 		printf("\n");
 	}
-	int numberForDelete;
+	int position;
 	printf("Kakoj simvol po schetu hotite udalit'(1 - %i): ", stringLength);
-	scanf("%i", &numberForDelete);
-	while (numberForDelete > stringLength || numberForDelete < 1)
+	scanf("%i", &position);
+	while (position > stringLength || position < 1)
 	{
-		printf(numberForDelete < 1 ? "Takogo nomera ne mozhet byt'!\n" : "V stroke tol'ko %i simvolov!\n", stringLength);
-		scanf("%i", &numberForDelete);
+		printf(position < 1 ? "Takogo nomera ne mozhet byt'!\n" : "V stroke tol'ko %i simvolov!\n", stringLength);
+		scanf("%i", &position);
 	}
-	deleteSymbol(userString, numberForDelete);
+	deleteSymbol(userString, position);
 	printf("Vot chto poluchilos':\n%s", userString);
 }
 
@@ -47,9 +47,9 @@ int findStringLength(char* userString)
 	return length;
 }
 
-void deleteSymbol(char* userString, int numberForDelete)
+void deleteSymbol(char* userString, int position)
 {
-	for (int i = numberForDelete - 1; *(userString + i) != 0; i++)
+	for (int i = position - 1; *(userString + i) != 0; i++)
 	{
 		*(userString + i) = *(userString + i + 1);
 	}

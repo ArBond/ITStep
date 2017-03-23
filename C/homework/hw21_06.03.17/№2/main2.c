@@ -12,8 +12,8 @@ void clearChar();
 
 enum Register
 {
-	No,
-	Yes
+	CaseInsensitive,
+	CaseSensitive
 };
 
 void main()
@@ -42,12 +42,12 @@ void main()
 
 void deleteSymbol(char* userString, char symbolForDelete)
 {
-	enum Register selection = Yes;
+	enum Register selection = CaseSensitive;
 	if (symbolForDelete >= 'a' && symbolForDelete <= 'z' || symbolForDelete >= 'A' && symbolForDelete <= 'Z')
 	{
-		printf("Uchityvat' registr?\n %i - da    %i - net\n", Yes, No);
+		printf("Uchityvat' registr?\n %i - da    %i - net\n", CaseSensitive, CaseInsensitive);
 		scanf("%i", &selection);
-		while (selection > Yes || selection < No)
+		while (selection > CaseSensitive || selection < CaseInsensitive)
 		{
 			printf("Net takogo punkta!\n");
 			scanf("%i", &selection);
@@ -56,7 +56,7 @@ void deleteSymbol(char* userString, char symbolForDelete)
 	int pasteCounter = 0;
 	for (int i = 0; *(userString + i) != 0; i++)
 	{
-		if (*(userString + i) == symbolForDelete || selection == No && (symbolForDelete >= 'a' && symbolForDelete < 'z' && *(userString + i) == symbolForDelete - 32 ||
+		if (*(userString + i) == symbolForDelete || selection == CaseInsensitive && (symbolForDelete >= 'a' && symbolForDelete < 'z' && *(userString + i) == symbolForDelete - 32 ||
 			symbolForDelete >= 'A' && symbolForDelete < 'Z' && *(userString + i) == symbolForDelete + 32))
 		{
 		}
