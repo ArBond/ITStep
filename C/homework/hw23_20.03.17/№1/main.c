@@ -1,10 +1,10 @@
-/*	Задание 1:
-	Разработать программу для управления библиотекой книг(имя, автор, жанр, год) со
-	следующими возможностями :
-	• Добавление книг
-	• Вывод списка книг
-	• Сортировка по заданному критерию(имя, автор, жанр, год) с указанием
-	направления сортировки */
+п»ї/*	Р—Р°РґР°РЅРёРµ 1:
+	Р Р°Р·СЂР°Р±РѕС‚Р°С‚СЊ РїСЂРѕРіСЂР°РјРјСѓ РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ Р±РёР±Р»РёРѕС‚РµРєРѕР№ РєРЅРёРі(РёРјСЏ, Р°РІС‚РѕСЂ, Р¶Р°РЅСЂ, РіРѕРґ) СЃРѕ
+	СЃР»РµРґСѓСЋС‰РёРјРё РІРѕР·РјРѕР¶РЅРѕСЃС‚СЏРјРё :
+	вЂў Р”РѕР±Р°РІР»РµРЅРёРµ РєРЅРёРі
+	вЂў Р’С‹РІРѕРґ СЃРїРёСЃРєР° РєРЅРёРі
+	вЂў РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РєСЂРёС‚РµСЂРёСЋ(РёРјСЏ, Р°РІС‚РѕСЂ, Р¶Р°РЅСЂ, РіРѕРґ) СЃ СѓРєР°Р·Р°РЅРёРµРј
+	РЅР°РїСЂР°РІР»РµРЅРёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё */
 
 
 
@@ -17,17 +17,17 @@
 #define AUTOR_SIZE 20
 #define GENRE_SIZE 20
 
-void printStruct(struct Book* books, int positionForRecording);
+int punktSelection(int beginList, int endList);
+void printBooks(struct Book* books, int positionForRecording);
 void addBook(struct Book* books, int positionForRecording);
 void deleteBook(struct Book* books, int positionForRecording);
-void sortStruct(struct Book* books, int positionForRecording);
-
-void clearEnterSymbol(char* books);
+void sortBooks(struct Book* books, int positionForRecording);
 
 enum Menu
 {
+	BeginMenu = -1,
 	Exit,
-	PrintStruct,
+	PrintBooks,
 	AddBook,
 	DeleteBook,
 	Sort,
@@ -42,6 +42,14 @@ enum SortBy
 	ByGenre,
 	ByYear,
 	EndSortBy
+};
+
+enum SortDirection
+{
+	BeginSortDirection,
+	Ascending,
+	Descending,
+	EndSortDirection
 };
 
 struct Book
@@ -59,20 +67,14 @@ void main()
 	int positionForRecording = 0;
 	while (true)
 	{
-		printf(" %i - print books\n %i - add book\n %i - delete book\n %i - sort books\n %i - exit\n", PrintStruct, AddBook, DeleteBook, Sort, Exit);
-		int selection;
-		scanf("%i", &selection);
-		while (selection < Exit || selection >= EndMenu)
-		{
-			printf("There is no such punkt!\n");
-			scanf("%i", &selection);
-		}
+		printf("\n %i - print books\n %i - add book\n %i - delete book\n %i - sort books\n %i - exit\n", PrintBooks, AddBook, DeleteBook, Sort, Exit);
+		enum Menu selection = punktSelection(BeginMenu, EndMenu);
 		switch (selection)
 		{
-		case PrintStruct:
+		case PrintBooks:
 			if (positionForRecording > 0)
 			{
-				printStruct(books, positionForRecording);
+				printBooks(books, positionForRecording);
 			}
 			else
 			{
@@ -104,8 +106,8 @@ void main()
 			}
 			break;
 		case Sort:
-			sortStruct(books, positionForRecording);
-			printf("Books sorted.\n");
+			sortBooks(books, positionForRecording);
+			printf("Books is sorted.\n");
 			break;
 		default:
 			return;
@@ -113,40 +115,41 @@ void main()
 	}
 }
 
-void printStruct(struct Book* books, int positionForRecording)
+void printBooks(struct Book* books, int positionForRecording)
 {
-	printf("#:\tname\tauthor\tganre\tyear\n");
+	printf(" \tname:\tauthor:\tganre:\tyear:\n");
 	for (int i = 0; i < positionForRecording; i++)
 	{
-		printf("Book %i:\t%s\t%s\t%s\t%i\n", books[i].bookCount, books[i].name, books[i].author, books[i].genre, books[i].year);
+		printf("book %i:\t%s\t%s\t%s\t%i\n", books[i].bookCount, books[i].name, books[i].author, books[i].genre, books[i].year);
 	}
+}
+
+void clearEnterSymbol(char* books)
+{
+	while (*(books) != '\n')
+	{
+		books++;
+	}
+	*(books) = 0;
+}
+
+void enteringBookInfo(char* title, char* bookCategory)
+{
+	printf("%s: ", title);
+	do
+	{
+	fgets(bookCategory, NAME_SIZE, stdin);
+	} while (*(bookCategory) == '\n');
+	clearEnterSymbol(bookCategory);
 }
 
 void addBook(struct Book* books, int positionForRecording)
 {
 	books[positionForRecording].bookCount = positionForRecording + 1;
 	printf("\nBook %i:\n", positionForRecording + 1);
-	printf("Name: ");
-	do
-	{
-		fgets(books[positionForRecording].name, NAME_SIZE, stdin);
-	} while (books[positionForRecording].name[0] == '\n');
-	clearEnterSymbol(&books[positionForRecording].name[0]);
-
-	printf("Author: ");
-	do
-	{
-		fgets(books[positionForRecording].author, AUTOR_SIZE, stdin);
-	} while (books[positionForRecording].author[0] == '\n');
-	clearEnterSymbol(&books[positionForRecording].author[0]);
-
-	printf("Genre: ");
-	do
-	{
-		fgets(books[positionForRecording].genre, GENRE_SIZE, stdin);
-	} while (books[positionForRecording].genre[0] == '\n');
-	clearEnterSymbol(&books[positionForRecording].genre[0]);
-
+	enteringBookInfo("Name", books[positionForRecording].name);
+	enteringBookInfo("Author", books[positionForRecording].author);
+	enteringBookInfo("Genre", books[positionForRecording].genre);
 	printf("Year: ");
 	scanf("%i", &books[positionForRecording].year);
 }
@@ -172,50 +175,51 @@ void deleteBook(struct Book* books, int positionForRecording)
 	}
 }
 
-void sortStruct(struct Book* books, int positionForRecording)
+void swap(char* firstElement, char* secondElement)
+{
+	char strBuffer[NAME_SIZE];
+	strcpy(strBuffer, firstElement);
+	strcpy(firstElement, secondElement);
+	strcpy(secondElement, strBuffer);
+}
+
+void sortBooks(struct Book* books, int positionForRecording)
 {
 	printf("Sort by:\n %i - name\n %i - author\n %i - genre\n %i - year\n", ByName, ByAuthor, ByGenre, ByYear);
-	int selection;
-	scanf("%i", &selection);
-	while (selection <= BeginSortBy || selection >= EndSortBy)
+	enum SortBy category = punktSelection(BeginSortBy, EndSortBy);
+	printf("Sorting direction:\n %i - ascending\n %i - descending\n", Ascending, Descending);
+	enum SortDirection sortingDirection = punktSelection(BeginSortDirection, EndSortDirection);
+	int comparisonResult;
+	for (int i = 0; i < positionForRecording - 1; i++)
 	{
-		printf("There is no such punkt!\n");
-		scanf("%i", &selection);
-	}
-	char strBuffer[NAME_SIZE];
-	for (int i = 0; i < positionForRecording; i++)
-	{
-		for (int j = 0; j < positionForRecording - i; j++)
+		for (int j = 0; j < positionForRecording - 1 - i; j++)
 		{
-			int rezult = 0;
-			switch (selection)
+			switch (category)
 			{
 			case ByName:
-				rezult = strcmp(books[j].name, books[j + 1].name);
+				comparisonResult = strcmp(books[j].name, books[j + 1].name);
 				break;
 			case ByAuthor:
-				rezult = strcmp(books[j].author, books[j + 1].author);
+				comparisonResult = strcmp(books[j].author, books[j + 1].author);
 				break;
 			case ByGenre:
-				rezult = strcmp(books[j].genre, books[j + 1].genre);
+				comparisonResult = strcmp(books[j].genre, books[j + 1].genre);
 				break;
 			default:
 				if (books[j].year > books[j + 1].year)
 				{
-					rezult = 1;
+					comparisonResult = 1;
+				}
+				else if (books[j].year < books[j + 1].year)
+				{
+					comparisonResult = -1;
 				}
 			}
-			if (rezult > 0)
+			if (comparisonResult > 0 && sortingDirection == Ascending || comparisonResult < 0 && sortingDirection == Descending)
 			{
-				strcpy(strBuffer, books[j].name);
-				strcpy(books[j].name, books[j + 1].name);
-				strcpy(books[j + 1].name, strBuffer);
-				strcpy(strBuffer, books[j].author);
-				strcpy(books[j].author, books[j + 1].author);
-				strcpy(books[j + 1].author, strBuffer);
-				strcpy(strBuffer, books[j].genre);
-				strcpy(books[j].genre, books[j + 1].genre);
-				strcpy(books[j + 1].genre, strBuffer);
+				swap(books[j].name, books[j + 1].name);
+				swap(books[j].author, books[j + 1].author);
+				swap(books[j].genre, books[j + 1].genre);
 				int buffer = books[j].year;
 				books[j].year = books[j + 1].year;
 				books[j + 1].year = buffer;
@@ -224,11 +228,14 @@ void sortStruct(struct Book* books, int positionForRecording)
 	}
 }
 
-void clearEnterSymbol(char* books)
+int punktSelection(int beginList, int endList)
 {
-	while (*(books) != '\n')
+	int selection;
+	scanf("%i", &selection);
+	while (selection <= beginList || selection >= endList)
 	{
-		books++;
+		printf("There is no such punkt!\n");
+		scanf("%i", &selection);
 	}
-	*(books) = 0;
+	return selection;
 }
