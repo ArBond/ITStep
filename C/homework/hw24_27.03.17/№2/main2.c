@@ -1,71 +1,159 @@
-/*	Задание 2:
-	Написать программу, которая хранит информацию об автомобиле(марка, модель, цвет
-	(enum), тип топлива(enum) и год) в динамическом массиве.Пользователь определяет
-	размерность массива и вводит 5 автомобилей.Реализовать возможность поиска всех
-	автомобилей младше определенного года. */
+п»ї/*	Р—Р°РґР°РЅРёРµ 2:
+	РќР°РїРёСЃР°С‚СЊ РїСЂРѕРіСЂР°РјРјСѓ, РєРѕС‚РѕСЂР°СЏ С…СЂР°РЅРёС‚ РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± Р°РІС‚РѕРјРѕР±РёР»Рµ(РјР°СЂРєР°, РјРѕРґРµР»СЊ, С†РІРµС‚
+	(enum), С‚РёРї С‚РѕРїР»РёРІР°(enum) Рё РіРѕРґ) РІ РґРёРЅР°РјРёС‡РµСЃРєРѕРј РјР°СЃСЃРёРІРµ.РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РѕРїСЂРµРґРµР»СЏРµС‚
+	СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РјР°СЃСЃРёРІР° Рё РІРІРѕРґРёС‚ 5 Р°РІС‚РѕРјРѕР±РёР»РµР№.Р РµР°Р»РёР·РѕРІР°С‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїРѕРёСЃРєР° РІСЃРµС…
+	Р°РІС‚РѕРјРѕР±РёР»РµР№ РјР»Р°РґС€Рµ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ РіРѕРґР°. */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define AUTOS 5
+#define STRING_LENGTH 2000000
 
 enum FuelsType
 {
-	BeginFuels,
-	EndFuels
+	BeginFuelsType,
+	FuelsType95,
+	FuelsType92,
+	FuelsTypeDisel,
+	FuelsTypeGas,
+	EndFuelsType
 };
 
-struct Autos
+enum Colors
+{
+	BeginColors,
+	WhiteColor,
+	YellowColor,
+	RedColor,
+	GrayColor,
+	BlackColor,
+	EndColors,
+};
+
+struct Cars
 {
 	char* mark;
 	char* model;
-	char* color;
-	char* fuelType;
-	char* year;
+	enum Colors color;
+	enum FuelsType fuelType;
+	int year;
 };
 
-#define CHARACTERISTICS 5
-
-char*** memoryAllocForStruct(int userLength)
+char** allocMemoryForCarsStruct(int carCount)
 {
-	char*** autosStruct = malloc(AUTOS * 4);
-	for (int i = 0; i < AUTOS; i++)
+	struct Cars** Cars = malloc(carCount * 4);
+	for (int i = 0; i < carCount; i++)
 	{
-		*(autosStruct + i) = malloc(CHARACTERISTICS * 4);
-		for (int j = 0; j < CHARACTERISTICS; j++)
-		{
-			*(*(autosStruct + i) + j) = malloc(userLength);
-		}
+		*(Cars + i) = malloc(sizeof(struct Cars));
+		(*(Cars + i))->mark = malloc(STRING_LENGTH);
+		(*(Cars + i))->model = malloc(STRING_LENGTH);
 	}
-	return autosStruct;
+	return Cars;
 }
 
-void freeMemoryStruct(char*** Autos, int userLength)
+void freeMemoryOfCarsStruct(struct Cars** Cars, int carCount)
 {
-	for (int i = 0; i < AUTOS; i++)
+	for (int i = 0; i < carCount; i++)
 	{
-		for (int j = 0; j < CHARACTERISTICS; j++)
+		free((*(Cars + i))->mark);
+		free((*(Cars + i))->model);
+		free(*(Cars + i));
+	}
+	free(Cars);
+}
+
+void clearChar()
+{
+	char ch;
+	do
+	{
+		ch = getchar();
+	} while (ch != '\n' && ch != EOF);
+}
+
+void getРЎharacteristic(int* СЃategory, int beginEnum, int endEnum)
+{
+
+	scanf("%i", СЃategory);
+	while (*СЃategory <= beginEnum || *СЃategory >= endEnum)
+	{
+		printf("There is no such item!\n");
+		scanf("%i", СЃategory);
+	}
+}
+
+void clearEnterSymbol(char* string)
+{
+	while (*string != 0)
+	{
+		if (*string == '\n')
 		{
-			free(*(*(Autos + i) + j));
+			*string = 0;
+			return;
+		}
+		string++;
+	}
+}
+
+void carsEntering(struct Cars** Cars, int carCount)
+{
+	for (int i = 0; i < carCount; i++)
+	{
+		clearChar();
+		printf("Car %i:\nMark: ", i + 1);
+		fgets((*(Cars + i))->mark, STRING_LENGTH, stdin);
+		clearEnterSymbol((*(Cars + i))->mark);
+
+		printf("Model: ");
+		fgets((*(Cars + i))->model, STRING_LENGTH, stdin);
+		clearEnterSymbol((*(Cars + i))->model);
+
+		printf("Color: %i - white  %i - yellow  %i - red  %i - gray  %i - black\n", WhiteColor, YellowColor, RedColor, GrayColor, BlackColor);
+		getРЎharacteristic(&(*(Cars + i))->color, BeginColors, EndColors);
+
+		printf("Fuel type: %i - 95  %i - 92  %i - disel  %i - gas\n", FuelsType95, FuelsType92, FuelsTypeDisel, FuelsTypeGas);
+		getРЎharacteristic(&(*(Cars + i))->fuelType, BeginFuelsType, EndFuelsType);
+		
+		printf("Year: ");
+		scanf("%i", &(*(Cars + i))->year);
+	}
+}
+
+void printCars(struct Cars** Cars, int carCount, int sortYear)
+{
+	printf("\tMark\tModel\tColor\tFuel\tYear\n");
+	for (int i = 0; i < carCount; i++)
+	{
+		if ((*(Cars + i))->year > sortYear)
+		{
+			printf("Car %i\t", i + 1);
+			printf("%s\t", (*(Cars + i))->mark);
+			printf("%s\t", (*(Cars + i))->model);
+			printf("%i\t", (*(Cars + i))->color);
+			printf("%i\t", (*(Cars + i))->fuelType);
+			printf("%i\n", (*(Cars + i))->year);
 		}
 	}
-	for (int i = 0; i < AUTOS; i++)
-	{
-		free(*(Autos + i));
-	}
-	free(Autos);
 }
 
 void main()
 {
-	printf("How many bytes you want to alloc for characteristic description?\n");
-	int userLength;
-	scanf("%i", &userLength);
-	while (userLength <= 0)
+	printf("Haw many cars you want to enter?\n");
+	int carCount;
+	scanf("%i", &carCount);
+	while (carCount < 1)
 	{
-		printf("Length cannot be 0 or less bytes!\n");
-		scanf("%i", &userLength);
+		printf("Car quantity cannot be 0 or less");
+		scanf("%i", &carCount);
 	}
-	char*** Autos = memoryAllocForStruct(userLength);
-	freeMemoryStruct(Autos, userLength);
+	struct Cars** Cars = allocMemoryForCarsStruct(carCount);
+	carsEntering(Cars, carCount);
+	printf("\n\t\t=======  Cars  =======\n");
+	printCars(Cars, carCount, INT_MIN);
+	int sortYear;
+	printf("Please enter the year to sort the cars by that year: ");
+	scanf("%i", &sortYear);
+	printf("\n\t=======  Cars under the year %i  =======\n", sortYear);
+	printCars(Cars, carCount, sortYear);
+	freeMemoryOfCarsStruct(Cars, carCount);
 }
