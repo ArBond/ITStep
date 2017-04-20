@@ -1,22 +1,98 @@
 from tkinter import*
 
+class Buttons():
+
+    def __init__(self):
+        self.total = 0
+
+    def click_number(self, number):
+        print(number)
+
+    def click0(self):
+    
+
+
+
 mainWindow = Tk()
-mainWindow.minsize(width = 400, height=460)
-mainWindow.maxsize(width = 400, height=460)
-mainWindow.title("Калькулятор")
+mainWindow.minsize(width = 280, height = 345)
+mainWindow.maxsize(width = 280, height = 345)
+mainWindow.title("Kuvalator")
 
-backPhoto = PhotoImage(file="E:\start screen.gif")
-background = Canvas(mainWindow, width=400, height=460)
-background.create_image(1,1,anchor=NW,image=backPhoto)
-background.place(x=-2,y=-2)
+backPhoto = PhotoImage(file = "E:\start screen.gif")
+background = Canvas(mainWindow, width = 280, height = 345)
+background.create_image(1, 1, anchor = NW, image = backPhoto)
+background.place(x = -2,y = -2)
 
-text = "0\n2"
+text1 = " "
+text2 = "0"
 
-text2=Label(mainWindow,text=text,width=33,height=2,bg='white',fg='black',font='arial 14', anchor="se")
-text2.place(x = 15, y = 40)
+total = Buttons()
 
-text3=Entry(width=33,justify=RIGHT,font='arial 14');
-text3.place(x = 15, y = 120)
+string1=Label(mainWindow, text = text1, width = 26, height = 1, bg = 'white', font = "arial 12", anchor = "e")
+string1.place(x = 15, y = 40)
+
+string2=Label(mainWindow, text = text2, width = 20, height = 1, bg = 'white', font = "arial 16", anchor = "e")
+string2.place(x = 15, y = 62)
+
+background.create_rectangle(15, 40 , 15+250, 40+55, outline = "gray", fill = "white")
+
+numbers = "789456123"
+i = 0
+numbersButton = []
+
+for j in range(1,4):
+    for k in range(3):
+        numbersButton.append(Button(mainWindow, text = numbers[i], width = 3, height = 1, font = "arial 14"))
+        numbersButton[i].place(x = k * 50 + 15, y = j * 45 + 110)
+#        numbersButton[i].bind("<ButtonPress-3", total.click_number(i))
+        numbersButton[i]["command"] = lambda x=numbers[i]: total.click_number(x)
+        i += 1
+
+button_DeleteSymbol = Button(mainWindow, text = chr(27), width = 3, height = 1,  font = "arial 14")
+button_DeleteSymbol.place(x = 15, y = 105)
+
+button_Clear = Button(mainWindow, text = "c", width = 3, height = 1,  font = "arial 14")
+button_Clear.place(x = 65, y = 105)
+
+button_ClearAll = Button(mainWindow, text = "ce", width = 3, height = 1,  font = "arial 14")
+button_ClearAll.place(x = 115, y = 105)
+
+button_0 = Button(mainWindow, text = "0", width = 3, height = 1,  font = "arial 14")
+button_0.place(x = 15, y = 290)
+
+button_00 = Button(mainWindow, text = "00", width = 3, height = 1,  font = "arial 14")
+button_00.place(x = 65, y = 290)
+
+button_point = Button(mainWindow, text = ".", width = 3, height = 1,  font = "arial 14")
+button_point.place(x = 115, y = 290)
+
+button_changeValue = Button(mainWindow, text = "+/-", width = 3, height = 1,  font = "arial 14")
+button_changeValue.place(x = 170, y = 105)
+
+button_add = Button(mainWindow, text = "+", width = 3, height = 1,  font = "arial 14")
+button_add.place(x = 170, y = 155)
+
+button_minus = Button(mainWindow, text = "-", width = 3, height = 1,  font = "arial 14")
+button_minus.place(x = 170, y = 200)
+
+button_mult = Button(mainWindow, text = "*", width = 3, height = 1,  font = "arial 14")
+button_mult.place(x = 170, y = 245)
+
+button_div = Button(mainWindow, text = "/", width = 3, height = 1,  font = "arial 14")
+button_div.place(x = 170, y = 290)
+
+button_cqrt = Button(mainWindow, text = "cqrt", width = 3, height = 1,  font = "arial 14")
+button_cqrt.place(x = 220, y = 105)
+
+button_perc = Button(mainWindow, text = "%", width = 3, height = 1,  font = "arial 14")
+button_perc.place(x = 220, y = 155)
+
+button_revers = Button(mainWindow, text = "1/x", width = 3, height = 1,  font = "arial 14")
+button_revers.place(x = 220, y = 200)
+
+button_total = Button(mainWindow, text = "=", width = 3, height = 3,  font = "arial 14")
+button_total.place(x = 220, y = 246)
+
 
 mainWindow.mainloop()
 
@@ -112,6 +188,7 @@ text_box.insert(0, "0")
 numbers = "789456123"
 i = 0
 bttn = []
+
 for j in range(1,4):
     for k in range(3):
         bttn.append(Button(calc, text = numbers[i]))
