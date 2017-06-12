@@ -4,7 +4,11 @@
 
 void Set::ReAllocateMemory(size_t newCapacity)
 {
-
+	m_capacity = newCapacity;
+	int* newMemory = new int[m_capacity];
+	memcpy(newMemory, m_elements, m_count);
+	delete[] m_elements;
+	m_elements = newMemory;
 }
 
 Set::Set():
