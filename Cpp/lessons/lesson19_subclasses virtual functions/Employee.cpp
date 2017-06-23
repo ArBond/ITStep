@@ -35,3 +35,13 @@ void Employee::Print() const
 	Person::Print();
 	std::cout << "Salary: " << m_salary << "\n";
 }
+
+Employee& Employee::operator=(Employee const& employee)
+{
+	if (this != &employee)
+	{
+		this->Person::operator=(employee);
+		m_salary = employee.m_salary;
+	}
+	return *this;
+}

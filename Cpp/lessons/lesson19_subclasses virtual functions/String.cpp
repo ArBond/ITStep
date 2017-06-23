@@ -6,7 +6,7 @@
 
 String::String()
 {
-	std::cout << "String constructor default\n";
+	//std::cout << "String constructor default\n";
 }
 
 String::String(char const* str)

@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#define _CRT_SECURE_NO_WARNINGS
+
 
 void PrintPerson(Person const& person)
 {
@@ -41,7 +43,12 @@ void main()
 	PrintPerson(emp1);
 	std::cout << "\n";*/
 
-	Cat cat;
+	/*Employee emp1("Ivanov", 400);
+	Employee emp2("Sidorov", 500);
+	emp1 = emp2;*/
+
+
+	/*Cat cat;
 	StrokeTheCat(cat);
 	Dog dog;
 	KickTheDog(dog);
@@ -50,5 +57,9 @@ void main()
 	StrokeTheCat(catdog);
 	KickTheDog(catdog);
 
-	PrintType(&dog);
+	PrintType(&dog);*/
+
+
+	Person* person = new Student();
+	delete person;
 }

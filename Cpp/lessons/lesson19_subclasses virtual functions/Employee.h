@@ -15,4 +15,6 @@ public:
 	int GetSalary() const;
 	void SetSalary(int salary);
 	void Print() const override;
+
+	Employee& operator=(Employee const& employee);
 };

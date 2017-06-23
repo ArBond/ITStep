@@ -4,6 +4,16 @@
 #include <iostream>
 
 
+void Student::Init()
+{
+	std::cout << "Student::Init()\n";
+}
+
+StudentInfo::~StudentInfo()
+{
+	std::cout << "StudentInfo destructor\n";
+}
+
 Student::Student() :
 	m_rating(0)
 {
@@ -30,10 +40,10 @@ Student::Student(Student&& student) :
 {
 }
 
-Student::~Student()
-{
-	std::cout << "Student destructor\n";
-}
+//Student::~Student()
+//{
+//	std::cout << "Student destructor\n";
+//}
 
 int Student::GetRating() const
 {
