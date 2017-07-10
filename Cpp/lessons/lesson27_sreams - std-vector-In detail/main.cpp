@@ -175,7 +175,7 @@ void main()
 	std::cout << std::endl;
 	
 	int num = 2;
-	std::function<bool(int&) lambda = [&num](int& el)
+	std::function<bool(int&)> lambda = [&num](int& el)
 	{
 		return (el % num) == 0;
 	};
