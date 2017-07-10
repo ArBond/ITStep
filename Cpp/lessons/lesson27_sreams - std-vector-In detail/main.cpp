@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include <functional>
 
 class CalcExeption : public std::exception
 {
@@ -172,10 +173,11 @@ void main()
 	std::vector<int> v5 = { 1, 2, 7, 34, 7, 3, 40 };
 	std::copy(v5.begin(), v5.end(), std::ostream_iterator<int>(std::cout, " "));
 	std::cout << std::endl;
-
-	auto lambda = [](int& el)
+	
+	int num = 2;
+	std::function<bool(int&) lambda = [&num](int& el)
 	{
-		return (el % 2) == 0;
+		return (el % num) == 0;
 	};
 
 	auto it5 = std::remove_if(v5.begin(), v5.end(), lambda);
