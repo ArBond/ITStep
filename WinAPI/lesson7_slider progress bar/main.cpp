@@ -1,77 +1,76 @@
 #include <Windows.h>
+#include <iostream>
+#include <string>
+#include <map>
 
 #include "commctrl.h"
 #pragma comment(lib, "comctl32")
 
 #include "resource.h"
 
-#define ID_TIMER1 123
-#define ID_TIMER2 124
 
-#define ID_STATUSBAR 234
+namespace Data
+{
+	std::map<std::wstring, std::pair<int, std::wstring>> studentData;
+}
+
+void addStudentData(std::map<std::wstring, std::pair<int, std::wstring>> &studentData)
+{
+	std::pair<int, std::wstring> item1 = { 10, L"General-purpose programming language. First appeared 1983" };
+	studentData.insert({ L"C++", item1 });
+
+	std::pair<int, std::wstring> item2 = { 0, L"Multi-paradigm programming language. First appeared 2000" };
+	studentData.insert({ L"C#", item2 });
+
+	std::pair<int, std::wstring> item3 = { 0, L"Application programming interfaces available in the Microsoft Windows OS." };
+	studentData.insert({ L"WinApi", item3 });
+
+	std::pair<int, std::wstring> item4 = { 10, L"Ðigh-level programming language for general-purpose programming. First appeared 1991" };
+	studentData.insert({ L"Python", item4 });
+
+	std::pair<int, std::wstring> item5 = { 0, L"General-purpose computer programming language that is concurrent, class-based. First appeared 1995" };
+	studentData.insert({ L"Java", item5 });
+
+	std::pair<int, std::wstring> item6 = { 0, L"Dynamic, reflective, object-oriented, general-purpose programming language. First appeared 1995" };
+	studentData.insert({ L"Ruby", item6 });
+}
 
 BOOL CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	static HWND hPrBar;
-	static HWND hStatusBar;
-	static HWND hSlider;
-	static HWND hTimerInSec;
 
-	static int seconds = 0;
-	static int parts[3] = { 150, 250, -1 };
+	static HWND hButtonShow;
+	static HWND hComboItems;
+	static HWND hEditInfo;
+	static HWND hEditMark;
 
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
-		hPrBar = GetDlgItem(hWnd, IDC_PROGRESS1);
-		hSlider = GetDlgItem(hWnd, IDC_SLIDER1);
+		hButtonShow = GetDlgItem(hWnd, IDC_BUTTONSHOW);
+		hComboItems = GetDlgItem(hWnd, IDC_COMBOITEMS);
+		hEditInfo = GetDlgItem(hWnd, IDC_STATICINFO);
+		hEditMark = GetDlgItem(hWnd, IDC_STATICUSERMARK);
 
-		hStatusBar = CreateWindowEx(NULL, STATUSCLASSNAME, NULL, WS_CHILD | WS_VISIBLE | SBARS_TOOLTIPS | SBARS_SIZEGRIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hWnd, (HMENU)ID_STATUSBAR, GetModuleHandle(NULL), NULL);
-		SendMessage(hStatusBar, SB_SIMPLE, false, 0);
-		SendMessage(hStatusBar, SB_SETPARTS, 3, (LPARAM)parts);
-		SendMessage(hStatusBar, SB_SETTEXT, 0, LPARAM(L"  User: Bondarenko Artemi"));
-		SendMessage(hStatusBar, SB_SETTEXT, 2, LPARAM(L"  Time: 0 sec"));
-
-		SendMessage(hPrBar, PBM_SETBKCOLOR, 0, LPARAM(RGB(100, 200, 100)));
-		SendMessage(hPrBar, PBM_SETBARCOLOR, 0, LPARAM(RGB(55, 50, 200)));
-		SendMessage(hPrBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
-
-		SendMessage(hSlider, TBM_SETRANGE, true, MAKELPARAM(0, 255));
-		SendMessage(hSlider, TBM_SETPOS, true, 200);
-
-		SetTimer(hWnd, ID_TIMER1, 100, NULL);
-		SetTimer(hWnd, ID_TIMER2, 1000, NULL);
-
-		hTimerInSec = GetDlgItem(hWnd, ID_TIMER2);
-
-		return true;
-	case WM_TIMER:
-		SendMessage(hPrBar, PBM_DELTAPOS, 1, 0);
-
-		wchar_t buff[50];
-		memset(buff, 0, 50);
-
-		wsprintf(buff, L"  Progress: %i %%", (LPCWSTR)SendMessage(hPrBar, PBM_GETPOS, 1, 0));
-		SendMessage(hStatusBar, SB_SETTEXT, 1, LPARAM(buff));
-
-		if (LOWORD(wParam) == ID_TIMER2)
+		addStudentData(Data::studentData);
+		
+		for (auto it = Data::studentData.begin(); it != Data::studentData.end(); ++it)
 		{
-			seconds++;
-			memset(buff, 0, 50);
-			wsprintf(buff, L"  Time: %i sec", seconds);
-			SendMessage(hStatusBar, SB_SETTEXT, 2, LPARAM(buff));
+			SendMessage(hComboItems, CB_ADDSTRING, 0, LPARAM(it->first.c_str()));
+			Data::studentData[L"C++"].first;
 		}
 
-		if (SendMessage(hPrBar, PBM_GETPOS, 0, 0) == 100)
-		{
-			SendMessage(hWnd, WM_CLOSE, 0, 0);
-		}
 		return true;
-	case WM_HSCROLL:
-		SendMessage(hPrBar, PBM_SETBARCOLOR, 0, LPARAM(RGB(255 - SendMessage(hSlider, TBM_GETPOS, 0, 0), 50, SendMessage(hSlider, TBM_GETPOS, 0, 0))));
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDC_BUTTONSHOW)
+		{
+			wchar_t item[20];
+			GetDlgItemText(hWnd, IDC_COMBOITEMS, item, 20);
+			std::wstring t = std::to_wstring(Data::studentData[item].first);
+			SetWindowText(hEditMark, t.c_str());
+			SetWindowText(hEditInfo, Data::studentData[item].second.c_str());
+		}
 		return true;
 	case WM_CLOSE:
-		KillTimer(hWnd, ID_TIMER1);
 		DestroyWindow(hWnd);
 		PostQuitMessage(0);
 		return true;
@@ -82,11 +81,6 @@ BOOL CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
-	INITCOMMONCONTROLSEX cc;
-	cc.dwSize = sizeof(cc);
-	cc.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&cc);
-
 	HWND hWnd = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc);
 
 	ShowWindow(hWnd, SW_NORMAL);
