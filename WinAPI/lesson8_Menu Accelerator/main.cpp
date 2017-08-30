@@ -61,13 +61,13 @@ BOOL CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		memset(&saveFile, 0, sizeof(OPENFILENAME));
 
-		openFile.lStructSize = sizeof(OPENFILENAME);
-		openFile.hInstance = GetModuleHandle(NULL);
-		openFile.hwndOwner = hWnd;
-		openFile.lpstrFile = szFilePathSave;
-		openFile.lpstrFileTitle = szFileTitleSave;
-		openFile.nMaxFile = 256;
-		openFile.nMaxFileTitle = 100;
+		saveFile.lStructSize = sizeof(OPENFILENAME);
+		saveFile.hInstance = GetModuleHandle(NULL);
+		saveFile.hwndOwner = hWnd;
+		saveFile.lpstrFile = szFilePathSave;
+		saveFile.lpstrFileTitle = szFileTitleSave;
+		saveFile.nMaxFile = 256;
+		saveFile.nMaxFileTitle = 100;
 
 		hEditMain = GetDlgItem(hWnd, IDC_EDITMAIN);
 		hAboutProgram = GetDlgItem(hWnd, IDD_DIALOG2);
