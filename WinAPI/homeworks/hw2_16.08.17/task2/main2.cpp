@@ -3,54 +3,45 @@
 подходящим образом. */
 
 #include <Windows.h>
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch (uMsg)
-	{
-	case WM_CREATE:
-		MessageBox(hWnd, L"Go?", L"123", MB_YESNOCANCEL);
-		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-	return 0;
-}
+#include <time.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
-	HWND hWnd;
-	WNDCLASSEX wnd;
-	memset(&wnd, 0, sizeof(wnd));
-
-	wnd.cbSize = sizeof(wnd);
-	wnd.lpszClassName = L"WINDOW";
-	wnd.lpfnWndProc = WndProc;
-	wnd.hInstance = hInstance;
-
-	if (!RegisterClassEx(&wnd))
+	if (MessageBox(NULL, L"Загадай число от 1 до 100 и я его угадаю!", L"Угадайка", MB_OKCANCEL) == IDOK)
 	{
-		return 1;
+		srand(time(0));
+		wchar_t buff[50];
+		int botBorder = 1;
+		int topBorder = 99;
+		int count = 0;
+		int number;
+		int preBorder;
+		int id;
+
+		while(topBorder != 0)
+		{
+			number = botBorder + rand() % topBorder;
+			count++;
+			wsprintf(buff, L"Это число больше %i ?", number);
+			id = MessageBox(NULL, buff, L"Угадайка", MB_YESNOCANCEL);
+			if (id == IDYES)
+			{
+				preBorder = botBorder;
+				botBorder = number + 1;	
+				topBorder -= botBorder - preBorder;
+
+			}
+			else if (id == IDNO)
+			{
+				topBorder = number - botBorder;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		wsprintf(buff, L"Это число %i!\nЯ Угадал за %i попыток =)", botBorder, count);
+		MessageBox(NULL, buff, L"Угадайка", MB_OK);
 	}
-
-	hWnd = CreateWindowEx(WS_EX_TOPMOST, wnd.lpszClassName, L"1", WS_OVERLAPPEDWINDOW, 300, 100, 200, 200, NULL, NULL, hInstance, NULL);
-
-	if (!hWnd)
-	{
-		return 2;
-	}
-
-	//ShowWindow(hWnd, 1);
-
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	return msg.wParam;
+	return 0;
 }
