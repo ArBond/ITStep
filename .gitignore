@@ -252,3 +252,5 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+WinAPI/homeworks/hw2_12.09.17/hw2_12.09.17/App.config
+WinAPI/homeworks/hw2_12.09.17/hw2_12.09.17/hw2_13.09.17.csproj
