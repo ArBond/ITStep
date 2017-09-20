@@ -9,6 +9,8 @@ namespace hw3_14._09._17
     public class Cell
     {
         private char symbol = ' ';
+        private bool isShip = false;
+        private bool isShoted = false;
 
         public void SetSymbol(char symbol)
         {
