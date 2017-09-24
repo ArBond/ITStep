@@ -8,25 +8,34 @@ namespace hw3_14._09._17
 {
     public class Cursor
     {
-        private char symbol = '@';
         private int xPos = 0;
         private int yPos = 0;
 
-        public void ChangeX(int xPos)
+        public void ChangePos(ConsoleKeyInfo key)
         {
-            if(xPos >= 0 && xPos < 10)
-                this.xPos = xPos;
-
+            switch (key.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (yPos > 0)
+                        yPos--;
+                    break;
+                case ConsoleKey.DownArrow:
+                    if (yPos < 9)
+                        yPos++;
+                    break;
+                case ConsoleKey.LeftArrow:
+                    if (xPos > 0)
+                        xPos--;
+                    break;
+                case ConsoleKey.RightArrow:
+                    if (xPos < 9)
+                        xPos++;
+                    break;
+                default:
+                    break;
+            }
         }
 
-        public void ChangeY(int yPos)
-        {
-            if (yPos >= 0 && yPos < 10)
-                this.yPos = yPos;
-        }
-
-        public int GetX() => xPos;
-
-        public int GetY() => yPos;
+        public int[] GetPos() => new int[] { xPos, yPos };
     }
 }

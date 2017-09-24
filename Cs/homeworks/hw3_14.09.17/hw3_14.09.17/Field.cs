@@ -8,12 +8,11 @@ namespace hw3_14._09._17
 {
     public class Field
     {
-        private Cell[,] cells = new Cell[10,10];
-        private Cursor cursor = new Cursor();
+        public Cell[,] cells = new Cell[10,10];
 
-        public Field()
+        public Field(Cursor cursor)
         {
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 for(int j = 0; j < 10; j++)
                 {
@@ -22,22 +21,34 @@ namespace hw3_14._09._17
             }
         }
 
-        public void Print()
+        public void Print(Cursor cursor)
         {
             StringBuilder str = new StringBuilder();
 
-            str.Append($"Your field\n{(char)9484}");
-            for(int i = 0; i < 10; i++)
+            str.Append((char)9484);
+            for (int i = 0; i < 10; i++)
                 str.Append((char)9472);
             str.Append($"{(char)9488}\n");
-            //byte[] c = { 217 };
-            //var cCh = Encoding.GetEncoding("cp866").GetChars(c);
+
+            byte[] c = { 249 };
+            var cCh = Encoding.GetEncoding("cp866").GetChars(c);
 
             for (int i = 0; i < 10; i++)
             {
                 str.Append((char)9474);
                 for (int j = 0; j < 10; j++)
-                    str.Append(cells[i,j].GetSymbol());
+                {
+                    if (cursor != null && cursor.GetPos()[0] == j && cursor.GetPos()[1] == i)
+                        str.Append((char)164);
+                    else if (cells[i, j].IsShip == true && cells[i, j].IsShoted == true)
+                        str.Append('X');
+                    else if (cursor == null && cells[i, j].IsShip == true)
+                        str.Append((char)9608);
+                    else if (cells[i, j].IsShoted == true)
+                        str.Append((char)8729);
+                    else
+                        str.Append(' ');
+                }
                 str.Append($"{(char)9474}\n");
             }
 
