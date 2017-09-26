@@ -30,8 +30,8 @@ namespace hw3_14._09._17
                 str.Append((char)9472);
             str.Append($"{(char)9488}\n");
 
-            byte[] c = { 249 };
-            var cCh = Encoding.GetEncoding("cp866").GetChars(c);
+            //byte[] c = { 249 };
+            //var cCh = Encoding.GetEncoding("cp866").GetChars(c);
 
             for (int i = 0; i < 10; i++)
             {
@@ -42,7 +42,7 @@ namespace hw3_14._09._17
                         str.Append((char)164);
                     else if (cells[i, j].IsShip == true && cells[i, j].IsShoted == true)
                         str.Append('X');
-                    else if (cursor == null && cells[i, j].IsShip == true)
+                    else if (/*cursor == null &&*/ cells[i, j].IsShip == true)
                         str.Append((char)9608);
                     else if (cells[i, j].IsShoted == true)
                         str.Append((char)8729);

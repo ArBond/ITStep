@@ -6,8 +6,7 @@ using System.Threading;
 
 /*
     Осталось доделать:
-        -умная стрельба компа
-        -ручная расстановка кораблей
+        -доделать ручную расстановку кораблей
 */
 
 namespace hw3_14._09._17
@@ -20,7 +19,7 @@ namespace hw3_14._09._17
             Field playerField = new Field(cursor);
             Ship playerShip = new Ship();
 
-            playerShip.RandomSet(playerField);
+            //playerShip.RandomSet(playerField);
 
             Console.WriteLine("Your field");
             playerField.Print(cursor);
@@ -57,7 +56,7 @@ namespace hw3_14._09._17
 
             while (true)
             {
-                bool IsEndOfStoke = false;
+                bool @continue = true;
                 do
                 {
                     Console.Clear();
@@ -71,27 +70,26 @@ namespace hw3_14._09._17
                     switch (key.Key)
                     {
                         case ConsoleKey.Enter:
-                            IsEndOfStoke = computerShip.Shot(cursor, computerField);
+                            @continue = computerShip.Shot(cursor, computerField);
                             break;
                         default:
                             break;
                     }
                     
                 }
-                while (IsEndOfStoke == false);
+                while (@continue == true);
 
-                IsEndOfStoke = false;
                 do
                 {
-                    //Thread.Sleep(500);
-                    IsEndOfStoke = playerShip.RandomShot(playerField);
+                    Thread.Sleep(1000);
+                    @continue = playerShip.RandomShot(playerField);
                     Console.Clear();
                     Console.WriteLine("Your field");
                     playerField.Print(null);
                     Console.WriteLine("\nComputer field");
                     computerField.Print(cursor);
                 }
-                while (IsEndOfStoke == false);
+                while (@continue == true);
 
                 if (computerShip.ShipCount == 0 || playerShip.ShipCount == 0)
                 {
