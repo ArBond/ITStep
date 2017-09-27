@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace hw3_14._09._17
 {
     public class Cursor
     {
+        public char Symbol { get; set; } = (char)164;
+
         private int xPos = 0;
         private int yPos = 0;
 

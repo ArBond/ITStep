@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace hw3_14._09._17
 {
@@ -21,7 +18,7 @@ namespace hw3_14._09._17
             }
         }
 
-        public void Print(Cursor cursor)
+        public void Print(Cursor cursor, bool drowShips)
         {
             StringBuilder str = new StringBuilder();
 
@@ -30,19 +27,21 @@ namespace hw3_14._09._17
                 str.Append((char)9472);
             str.Append($"{(char)9488}\n");
 
-            //byte[] c = { 249 };
-            //var cCh = Encoding.GetEncoding("cp866").GetChars(c);
-
             for (int i = 0; i < 10; i++)
             {
                 str.Append((char)9474);
                 for (int j = 0; j < 10; j++)
                 {
                     if (cursor != null && cursor.GetPos()[0] == j && cursor.GetPos()[1] == i)
-                        str.Append((char)164);
+                    {
+                        if (cells[cursor.GetPos()[1], cursor.GetPos()[0]].IsShip == true && cells[cursor.GetPos()[1], cursor.GetPos()[0]].IsShoted == true)
+                            str.Append('#');
+                        else
+                            str.Append(cursor.Symbol);
+                    }
                     else if (cells[i, j].IsShip == true && cells[i, j].IsShoted == true)
                         str.Append('X');
-                    else if (/*cursor == null &&*/ cells[i, j].IsShip == true)
+                    else if (drowShips == true && cells[i, j].IsShip == true)
                         str.Append((char)9608);
                     else if (cells[i, j].IsShoted == true)
                         str.Append((char)8729);

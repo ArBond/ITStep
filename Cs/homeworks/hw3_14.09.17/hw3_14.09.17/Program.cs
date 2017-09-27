@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-
-/*
-    Осталось доделать:
-        -доделать ручную расстановку кораблей
-*/
 
 namespace hw3_14._09._17
 {
@@ -15,92 +7,125 @@ namespace hw3_14._09._17
     {
         static void Main(string[] args)
         {
-            Cursor cursor = new Cursor();
-            Field playerField = new Field(cursor);
-            Ship playerShip = new Ship();
-
-            //playerShip.RandomSet(playerField);
-
-            Console.WriteLine("Your field");
-            playerField.Print(cursor);
-            while(true)
+            Console.WriteLine("Welcome to SEA BATTLE!");
+            Thread.Sleep(2000);
+            bool game = true;
+            while (game)
             {
-                if (playerShip.ShipCount == 10)
-                {
-                    Console.WriteLine("Okey. Let's go!\n Press any key");
-                    Console.ReadKey();
-                    break;
-                }
+                Cursor cursor = new Cursor();
+                Field playerField = new Field(cursor);
+                Ship playerShip = new Ship();
 
-                var key = Console.ReadKey();
-                cursor.ChangePos(key);
-                switch(key.Key)
-                {
-                    case ConsoleKey.Enter:
-                        playerShip.Set(cursor, playerField);
-                        break;
-                    case ConsoleKey.Delete:
-                        playerShip.Delete(cursor, playerField);
-                        break;
-                    default:
-                        break;
-                }
-                Console.Clear();
-                Console.WriteLine("Your field");
-                playerField.Print(cursor);
-            }
-
-            Field computerField = new Field(cursor);
-            Ship computerShip = new Ship();
-            computerShip.RandomSet(computerField);
-
-            while (true)
-            {
-                bool @continue = true;
+                Console.WriteLine("Choose how to set ships:\n<a> - automatically\t<h> - by hand");
+                ConsoleKeyInfo input;
                 do
                 {
-                    Console.Clear();
-                    Console.WriteLine("Your field");
-                    playerField.Print(null);
-                    Console.WriteLine("\nComputer field");
-                    computerField.Print(cursor);
+                    input = Console.ReadKey();
+                    if (input.Key == ConsoleKey.A)
+                    {
+                        playerShip.RandomSet(playerField);
+                    }
+                }
+                while (input.Key != ConsoleKey.A && input.Key != ConsoleKey.H);
+
+                Console.Clear();
+                Console.WriteLine("Your field");
+                playerField.Print(cursor, true);
+                while (true)
+                {
+                    if (playerShip.ShipCount == 10)
+                    {
+                        Console.WriteLine("Okay. Let's go!\n Press any key");
+                        Console.ReadKey();
+                        break;
+                    }
 
                     var key = Console.ReadKey();
                     cursor.ChangePos(key);
                     switch (key.Key)
                     {
                         case ConsoleKey.Enter:
-                            @continue = computerShip.Shot(cursor, computerField);
+                            playerShip.Set(cursor, playerField);
+                            break;
+                        case ConsoleKey.Delete:
+                            playerShip.Delete(cursor, playerField);
                             break;
                         default:
                             break;
                     }
-                    
-                }
-                while (@continue == true);
-
-                do
-                {
-                    Thread.Sleep(1000);
-                    @continue = playerShip.RandomShot(playerField);
                     Console.Clear();
                     Console.WriteLine("Your field");
-                    playerField.Print(null);
-                    Console.WriteLine("\nComputer field");
-                    computerField.Print(cursor);
+                    playerField.Print(cursor, true);
                 }
-                while (@continue == true);
 
-                if (computerShip.ShipCount == 0 || playerShip.ShipCount == 0)
+                Field computerField = new Field(cursor);
+                Ship computerShip = new Ship();
+                computerShip.RandomSet(computerField);
+
+                while (true)
                 {
-                    if(computerShip.ShipCount == 0 && playerShip.ShipCount == 0)
-                        Console.WriteLine("Draw");
-                    else if (computerShip.ShipCount == 0)
-                        Console.WriteLine("You Win!");
-                    else
-                        Console.WriteLine("You Lose.");
-                    break;
+                    bool @continue = true;
+                    do
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Your field");
+                        playerField.Print(null, true);
+                        Console.WriteLine("\nComputer field");
+                        computerField.Print(cursor, false);
+
+                        var key = Console.ReadKey();
+                        cursor.ChangePos(key);
+                        switch (key.Key)
+                        {
+                            case ConsoleKey.Enter:
+                                @continue = computerShip.Shot(cursor, computerField);
+                                break;
+                            default:
+                                break;
+                        }
+                        if (playerShip.ShipCount == 0)
+                            @continue = false;
+                    }
+                    while (@continue == true);
+
+                    do
+                    {
+                        Thread.Sleep(300);
+                        @continue = playerShip.RandomShot(playerField);
+                        Console.Clear();
+                        Console.WriteLine("Your field");
+                        playerField.Print(null, true);
+                        Console.WriteLine("\nComputer field");
+                        computerField.Print(cursor, false);
+
+                        if (computerShip.ShipCount == 0 || playerShip.ShipCount == 0)
+                            @continue = false;
+                    }
+                    while (@continue == true);
+                    if (computerShip.ShipCount == 0 || playerShip.ShipCount == 0)
+                    {
+                        if (computerShip.ShipCount == 0 && playerShip.ShipCount == 0)
+                            Console.WriteLine("Draw");
+                        else if (computerShip.ShipCount == 0)
+                            Console.WriteLine("You Win!");
+                        else
+                            Console.WriteLine("You Lose.");
+                        Console.WriteLine("Press any key...");
+                        Console.ReadKey();
+                        break;
+                    }
                 }
+                Console.Clear();
+                Console.WriteLine("<enter> - new game\t<esc> - exit");
+                do
+                {
+                    input = Console.ReadKey();
+                    if (input.Key == ConsoleKey.Escape)
+                        game = false;
+                }
+                while (input.Key != ConsoleKey.Escape && input.Key != ConsoleKey.Enter);
+                Thread.Sleep(1000);
+                Console.Clear();
             }
         }
     }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace hw3_14._09._17
 {
@@ -78,58 +74,60 @@ namespace hw3_14._09._17
         {
             if (shipSetting == false)
             {
-                field.cells[0, 0].IsShip = true;
-
                 shipBeginPos[0] = cursor.GetPos()[1];
                 shipBeginPos[1] = cursor.GetPos()[0];
-                if (CheckSet(new int[,] { { cursor.GetPos()[0], cursor.GetPos()[1] } }, field))
+                if (CheckSet(new int[,] { { shipBeginPos[0], shipBeginPos[1] } }, field))
                 {
-                    field.cells[shipBeginPos[0], shipBeginPos[1]].IsShip = true;
+                    cursor.Symbol = (char)9608;
                     shipSetting = true;
                 }
             }
             else
             {
-                field.cells[0, 0].IsShip = false;
-
                 int yEnd = cursor.GetPos()[1];
                 int xEnd = cursor.GetPos()[0];
+                if (shipBeginPos[0] != yEnd && shipBeginPos[1] != xEnd)
+                {
+                    shipSetting = false;
+                    cursor.Symbol = (char)164;
+                    return;
+                }
                 if (CheckSet(new int[,] { { yEnd, xEnd } }, field))
                 {
-                    field.cells[yEnd, xEnd].IsShip = true;
+                    int shipLength = shipBeginPos[0] == yEnd ? xEnd - shipBeginPos[1] : yEnd - shipBeginPos[0];
+                    if (shipLength < 0)
+                        shipLength = -shipLength;
+                    shipLength++;
+                    if (shipLength > 4 || shipLengths[shipLength] == 0)
+                    {
+                        shipSetting = false;
+                        cursor.Symbol = (char)164;
+                        return;
+                    }
+                    ships[shipCount] = new int[shipLength, 2];
+                    for (int i = 0; i < shipLength; i++)
+                    {
+                        if (shipBeginPos[0] == yEnd)
+                        {
+                            ships[shipCount][i, 0] = yEnd;
+                            ships[shipCount][i, 1] = xEnd - shipBeginPos[1] > 0 ? shipBeginPos[1]++ : shipBeginPos[1]--;
+                        }
+                        else
+                        {
+                            ships[shipCount][i, 1] = xEnd;
+                            ships[shipCount][i, 0] = yEnd - shipBeginPos[0] > 0 ? shipBeginPos[0]++ : shipBeginPos[0]--;
+                        }
+                    }
 
-                    //int shipLength = shipBeginPos[0] == yEnd ? xEnd - shipBeginPos[1] : yEnd - shipBeginPos[0];
-                    //if (shipLength < 0)
-                    //    shipLength = -shipLength;
-                    //if (shipLength++ > 4 || shipLengths[shipLength] == 0)
-                    //{
-                    //    shipSetting = false;
-                    //    return;
-                    //}
-                    //ships[shipCount] = new int[shipLength, 2];
-                    //for(int i = 0; i < shipLength; i++)
-                    //{
-                    //    if (shipBeginPos[0] == yEnd)
-                    //    {
-                    //        ships[shipCount][i, 0] = yEnd;
-                    //        ships[shipCount][i, 1] = xEnd - shipBeginPos[1] > 0 ? shipBeginPos[1]++ : shipBeginPos[1]--;
-                    //    }
-                    //    else
-                    //    {
-                    //        ships[shipCount][i, 0] = xEnd;
-                    //        ships[shipCount][i, 1] = yEnd - shipBeginPos[0] > 0 ? shipBeginPos[0]++ : shipBeginPos[0]--;
-                    //    }
-                    //}
-
-                    //for (int i = 0; i < shipLength; i++)
-                    //{
-                    //    field.cells[ships[shipCount][i, 0], ships[shipCount][i, 1]].IsShip = true;
-                    //}
-
-                    //shipLengths[shipLength]--;
-                    shipCount++;
-                    shipSetting = false;
+                    for (int i = 0; i < shipLength; i++)
+                    {
+                        field.cells[ships[shipCount][i, 0], ships[shipCount][i, 1]].IsShip = true;
+                    }
+                    shipLengths[shipLength]--;
+                    shipCount++; 
                 }
+                cursor.Symbol = (char)164;
+                shipSetting = false;
             }
         }
 
@@ -197,12 +195,35 @@ namespace hw3_14._09._17
             return true;
         }
 
+        public void Delete(Cursor cursor, Field field)
+        {
+            if (field.cells[cursor.GetPos()[1], cursor.GetPos()[0]].IsShip == true)
+            {
+                for (int i = 0; i < shipCount; i++)
+                {
+                    for (int j = 0; j < ships[i].Length / 2; j++)
+                    {
+                        if (ships[i][j, 0] == cursor.GetPos()[1] && ships[i][j, 1] == cursor.GetPos()[0])
+                        {
+                            for (int k = 0; k < ships[i].Length / 2; k++)
+                                field.cells[ships[i][k, 0], ships[i][k, 1]].IsShip = false;
+                            shipCount--;
+                            shipLengths[ships[i].Length / 2]++;
+                            for (int k = i; k < shipCount; k++)
+                                ships[k] = ships[k + 1];
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         public bool Shot(Cursor cursor, Field field)
         {
             int xPos = cursor.GetPos()[0];
             int yPos = cursor.GetPos()[1];
             if (field.cells[yPos, xPos].IsShoted == true)
-                return false;
+                return true;
             else
             {
                 field.cells[yPos, xPos].IsShoted = true;
@@ -299,33 +320,27 @@ namespace hw3_14._09._17
 
         private void DrowingCheck(int[] cell, Field field)
         {
-            int count = 0;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 10; i++)
             {
-                for (int j = 3 - i; j < 4; j++)
+                for (int j = 0; j < ships[i].Length / 2; j++)
                 {
-                    for (int k = 0; k < 4 - i; k++)
+                    if (ships[i][j, 0] == cell[0] && ships[i][j, 1] == cell[1])
                     {
-                        if (ships[count][k, 0] == cell[0] && ships[count][k, 1] == cell[1])
-                            goto label;
-                    }
-                    count++;
-                }
-            }
-            label:
-            {
-                for(int i = 0; i < ships[count].Length / 2; i++)
-                {
-                    if (field.cells[ships[count][i, 0], ships[count][i, 1]].IsShoted == false)
-                    {
-                        damageCountOfShip++;
-                        isDamagedShip = true;
+                        for (int k = 0; k < ships[i].Length / 2; k++)
+                        {
+                            if (field.cells[ships[i][k, 0], ships[i][k, 1]].IsShoted == false)
+                            {
+                                damageCountOfShip++;
+                                isDamagedShip = true;
+                                return;
+                            }
+                        }
+                        SetDrowed(ships[i], field);
+                        isDamagedShip = false;
+                        damageCountOfShip = 0;
                         return;
                     }
                 }
-                SetDrowed(ships[count], field);
-                isDamagedShip = false;
-                damageCountOfShip = 0;
             }
         }
 
@@ -378,15 +393,6 @@ namespace hw3_14._09._17
                     if (xPos < 10)
                         field.cells[xPos, yPos].IsShoted = true;
                 }
-            }
-        }
-
-        public void Delete(Cursor cursor, Field field)
-        {
-            if (field.cells[cursor.GetPos()[1], cursor.GetPos()[0]].IsShip == true)
-            {
-                field.cells[cursor.GetPos()[1], cursor.GetPos()[0]].IsShip = false;
-                shipCount--;
             }
         }
     }
