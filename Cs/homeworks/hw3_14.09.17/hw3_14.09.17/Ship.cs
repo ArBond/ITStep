@@ -269,9 +269,12 @@ namespace hw3_14._09._17
                         do
                         {
                             yPosOfShot += changer;
-                            if (yPosOfShot == 9 || yPosOfShot == 0 || field.cells[yPosOfShot, xPosOfShot].IsShoted == true &&
+                            if (yPosOfShot > 9 || yPosOfShot < 0 || field.cells[yPosOfShot, xPosOfShot].IsShoted == true &&
                                 field.cells[yPosOfShot, xPosOfShot].IsShip == false)
+                            {
+                                yPosOfShot = yPosOfFirstHit;
                                 changer = -changer;
+                            }
                         }
                         while (field.cells[yPosOfShot, xPosOfShot].IsShoted == true);
                     }
@@ -280,9 +283,12 @@ namespace hw3_14._09._17
                         do
                         {
                             xPosOfShot += changer;
-                            if (xPosOfShot == 9 || xPosOfShot == 0 || field.cells[yPosOfShot, xPosOfShot].IsShoted == true &&
+                            if (xPosOfShot > 9 || xPosOfShot < 0 || field.cells[yPosOfShot, xPosOfShot].IsShoted == true &&
                                 field.cells[yPosOfShot, xPosOfShot].IsShip == false)
+                            {
+                                xPosOfShot = xPosOfFirstHit;
                                 changer = -changer;
+                            }
                         }
                         while (field.cells[yPosOfShot, xPosOfShot].IsShoted == true);
                     }
