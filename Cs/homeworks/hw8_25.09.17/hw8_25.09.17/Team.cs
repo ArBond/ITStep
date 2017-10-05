@@ -32,6 +32,7 @@ namespace hw8_25._09._17
                 parts.Clear();
                 parts.Append(buff);
 
+                TeamLeader.Check(house);
                 Console.WriteLine(parts);
             }
         }

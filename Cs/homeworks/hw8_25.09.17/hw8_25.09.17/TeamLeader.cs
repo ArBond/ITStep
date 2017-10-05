@@ -23,21 +23,21 @@ namespace hw8_25._09._17
             int buildDoor = 0;
 
             int count;
-            for (count = 0; count < house.basementLayersQuantity; count++)
+            for (count = 0; count < house.BasementLayersQuantity; count++)
             {
                 if (house.parts[count].IsBuild)
                     buildBasementLayers++;
             }
             if (house.parts[count++].IsBuild)
                 buildDoor++;
-            for (int i = 0; i < (house.WindowQuantity < house.WallsQuantity ? house.WindowQuantity * 2 : house.WallsQuantity * 2); i++)
+            for (int i = 0; i < (house.WindowQuantity < house.WallsQuantity ? house.WindowQuantity : house.WallsQuantity); i++)
             {
                 if (house.parts[count++].IsBuild)
                     buildWallsCount++;
                 if (house.parts[count++].IsBuild)
                     buildWindowsCount++;
             }
-            for (int i = 0; i < house.WallsQuantity; i++)
+            for (int i = 0; i < house.WallsQuantity - house.WindowQuantity; i++)
             {
                 if (house.parts[count++].IsBuild)
                     buildWallsCount++;

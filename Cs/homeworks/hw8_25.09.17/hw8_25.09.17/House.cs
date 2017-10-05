@@ -10,12 +10,16 @@ namespace hw8_25._09._17
     public class House: IEnumerable
     {
         public List<IPart> parts = new List<IPart>();
-        public int basementLayersQuantity { get; private set; }
+        public int BasementLayersQuantity { get; private set; }
         public int WindowQuantity { get; private set; }
         public int WallsQuantity { get; private set; }
 
-        public House(int basementLayersQuantity, int WindowQuantity, int WallsQuantity)
+        public House(int basementLayersQuantity, int windowQuantity, int wallsQuantity)
         {
+            BasementLayersQuantity = basementLayersQuantity;
+            WindowQuantity = windowQuantity;
+            WallsQuantity = wallsQuantity;
+
             for (int i = 0; i < basementLayersQuantity; i++)
                 parts.Add(new Basement());
             parts.Add(new Door());
