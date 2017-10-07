@@ -10,15 +10,15 @@ namespace hw10_27._09._17
     public class Deck: IEnumerable
     {
         private Queue<Card> deck = new Queue<Card>();
-        public int Length { get { return deck.Count; } }
+        public int Size { get { return deck.Count; } }
 
         public void Initialize()
         {
             var list = new List<Card>();
-            for (int i = 0; i < 4; i++)
+            foreach (var suit in Enum.GetValues(typeof(CardSuit)))
             {
-                for (int j = 6; j < 15; j++)
-                    list.Add(new Card(i, j));
+                foreach (var value in Enum.GetValues(typeof(CardValue)))
+                    list.Add(new Card((CardSuit)suit, (CardValue)value));
             }
             deck = new Queue<Card>(Shuffle(list));
         }

@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace hw10_27._09._17
 {
     public class Game
     {
-        private Deck Deck { get; set; } = new Deck();
+        private Deck Deck { get; set; }
         public List<Player> Players { get; set; } = new List<Player>();
 
         public Game()
         {
+            Deck = new Deck();
             Deck.Initialize();
         }
 
@@ -21,10 +23,9 @@ namespace hw10_27._09._17
             int playersQuantity;
             Console.WriteLine("Enter the players quantity(2 - 4):");
             do
-            {
                 playersQuantity = int.Parse(Console.ReadLine());
-            }
             while (playersQuantity < 2 || playersQuantity > 4);
+
             Console.WriteLine("Enter names:");
             for (int i = 0; i < playersQuantity; i++)
             {
@@ -36,7 +37,7 @@ namespace hw10_27._09._17
 
         private void GiveOutCards(int playersQuantity)
         {
-            for(int i = 0; i < (36 / playersQuantity); i++)
+            for(int i = 0; i < (Deck.Size / playersQuantity);)
             {
                 for(int j = 0; j < playersQuantity; j++)
                 {
@@ -48,72 +49,56 @@ namespace hw10_27._09._17
 
         public void Play()
         {
-            var roundsCards = new Queue<Card>();
-            Player loozerInRound = null;
-
-            int count = 0;
-            while(true)
+            var roundsCards = new List<Card>();
+            int deleteCount;
+            while (Players.Count != 1)
             {
-                count++;
-                int MaxCard;
-                int QuantityMaxCards;
-
-                do
+                var activePlayers = new List<Player>(Players);
+                while (activePlayers.Count != 1)
                 {
-                    MaxCard = 0;
-                    QuantityMaxCards = 0;
-                    for (int i = 0; i < Players.Count; i++)
-                    {
-                        if (Players[i].IsContinue == true && Players[i].Cards.Length > 0)
-                        {
-                            var card = Players[i].Cards.PopCard();
-                            roundsCards.Enqueue(card);
+                    Console.Clear();
+                    var currentCards = new List<Card>();
+                    var activePlayersSize = activePlayers.Count;
 
-                            if (card.Value > MaxCard)
-                            {
-                                MaxCard = card.Value;
-                                QuantityMaxCards = 1;
-                                loozerInRound = Players[i];
-                                for (int j = 0; j < i; j++)
-                                    Players[j].IsContinue = false;
-                            }
-                            else if (card.Value == MaxCard)
-                                QuantityMaxCards++;
-                            else
-                                Players[i].IsContinue = false;
-                        }
-                    }
-                    if (QuantityMaxCards == 1)
+                    for(int i = 0; i < activePlayersSize; i++)
                     {
-                        foreach (var card in roundsCards)
-                            loozerInRound.Cards.PushCard(card);
-                        roundsCards.Clear();
-                        for (int i = 0; i < Players.Count; i++)
+                        Console.WriteLine($" {Players[i].Name}(cards: {Players[i].Cards.Size})");
+                        if (Players[i].Cards.Size != 0)
                         {
-                            if (Players[i].Cards.Length > 0)
-                                Players[i].IsContinue = true;
+                            var currentCard = Players[i].Cards.PopCard();
+                            currentCards.Add(currentCard);
+                            Console.WriteLine(currentCard);
                         }
+                        else
+                            activePlayers.Remove(Players[i]);
                     }
-                    else
+                    Thread.Sleep(1000);
+
+                    deleteCount = 0;
+                    for (int i = 0; i < currentCards.Count; i++)
                     {
-                        for (int i = 0; i < Players.Count; i++)
-                        {
-                            if (Players[i].IsContinue == true && Players[i].Cards.Length > 0)
-                            {
-                                var card = Players[i].Cards.PopCard();
-                                roundsCards.Enqueue(card);
-                            }
-                        }
+                        if (currentCards[i] < currentCards.Max())
+                            activePlayers.Remove(activePlayers[i - deleteCount++]);
                     }
-                    Console.WriteLine(count);
+
+                    foreach (var card in currentCards)
+                        roundsCards.Add(card);
                 }
-                while (QuantityMaxCards != 1);
+                roundsCards = roundsCards.OrderBy(a => Guid.NewGuid()).ToList();
+                foreach (var card in roundsCards)
+                    activePlayers[0].Cards.PushCard(card);
+                roundsCards.Clear();
+                Console.WriteLine($"{activePlayers[0].Name} take cards!");
+                Thread.Sleep(1500);
 
-                if(loozerInRound.Cards.Length >= 36)
+                deleteCount = 0;
+                for (int i = 0; i < Players.Count; i++)
                 {
-                    return;
+                    if (Players[i].Cards.Size == 0)
+                        Players.Remove(Players[i - deleteCount++]);
                 }
             }
+            Console.WriteLine($"{Players[0].Name} the winner!");
         }
     }
 }
