@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExamCS_PilotSimulator
+{
+    public class City
+    {
+        public string Name { get; set; }
+
+        public string Code { get; set; }
+
+        public Weather Weather { get; set; }
+
+        public City(string name, string code, Weather weather)
+        {
+            Name = name;
+            Code = code;
+            Weather = weather;
+        }
+    }
+}
