@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ExamCS_PilotSimulator
 {
@@ -10,15 +11,15 @@ namespace ExamCS_PilotSimulator
     {
         public string Name { get; set; }
 
-        public string Code { get; set; }
+        public int HeightAdjustment { get; set; }
 
-        public Weather Weather { get; set; }
+        public List<Dispatcher> Dispatchers { get; set; }
 
-        public City(string name, string code, Weather weather)
+        public City(string name, List<Dispatcher> dispatchers, int heightAdjustment)
         {
+            HeightAdjustment = heightAdjustment;
             Name = name;
-            Code = code;
-            Weather = weather;
+            Dispatchers = dispatchers;
         }
     }
 }

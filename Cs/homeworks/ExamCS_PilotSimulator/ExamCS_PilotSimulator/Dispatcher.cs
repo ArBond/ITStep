@@ -10,14 +10,16 @@ namespace ExamCS_PilotSimulator
     {
         public string Name { get; set; }
 
-        public bool IsActive { get; set; } = false;
+        public int PenaltyPoints { get; set; }
 
-        public City City { get; set; }
-
-        public Dispatcher(string name, City city)
+        public Dispatcher(string name)
         {
             Name = name;
-            City = city;
+        }
+
+        public int ReccomentedHeight(int speed, int N)
+        {
+            return (7 * speed + N);
         }
     }
 }

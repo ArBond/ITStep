@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ExamCS_PilotSimulator
 {
-    public class Pilot
+    public enum PlaneTypes
     {
-        public string Name { get; set; }
+        Boeing747,
+        AirbusA380,
+        ИЛ96,
+        ТУ154,
 
-        public Pilot(string name)
-        {
-            Name = name;
-        }
+        EndingNoUsed
     }
 }

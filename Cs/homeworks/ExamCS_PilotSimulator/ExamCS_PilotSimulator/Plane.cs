@@ -8,15 +8,15 @@ namespace ExamCS_PilotSimulator
 {
     public class Plane
     {
-        public string Number { get; set; }
+        public PlaneTypes PlaneType { get; set; }
 
         public int Speed { get; set; }
 
         public int Height { get; set; }
 
-        public Plane(string number)
+        public Plane(PlaneTypes planeType)
         {
-            Number = number;
+            PlaneType = planeType;
         }
     }
 }
