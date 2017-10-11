@@ -1,25 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+using System.Threading;
 
 namespace ExamCS_PilotSimulator
 {
     class Program
     {
-        static List<City> GetCitiesData()
+        static void Main(string[] args)
         {
-            var random = new Random();
-            var minsk = new City("Минск", new List<Dispatcher> { new Dispatcher("Михаил"), new Dispatcher("Андрей"), new Dispatcher("Павел") }, random.Next(-200, 200));
-            var mosсow = new City("Москва", new List<Dispatcher> { new Dispatcher("Александр"), new Dispatcher("Генадий"), new Dispatcher("Максим") }, random.Next(-200, 200));
-            var paris = new City("Париж", new List<Dispatcher> { new Dispatcher("Даниэль"), new Dispatcher("Пабло") }, random.Next(-200, 200));
-            var sanFrancisco = new City("Сан-Франциско", new List<Dispatcher> { new Dispatcher("Вильям"), new Dispatcher("Дэвид") }, random.Next(-200, 200));
-            var cities = new List<City>() { minsk, mosсow, paris, sanFrancisco };
-            return cities;
+            var flight = GetPreFlightInformation();
+
+            Console.WriteLine($"Отлично, для начала полета надо связаться с диспетчерами точек отправления и прибытия:");
+            AddDispatcher(flight, flight.StartedCity);
+            AddDispatcher(flight, flight.FinishedCity);
+
+            flight.ChangePlane += Flight_Change;
+            flight.ChangeDispatcher += Flight_ChangeDispatcher;
+
+            Console.WriteLine("Для начала полета нажмите любую клавишу:");
+            Console.ReadLine();
+
+            try
+            {
+                flight.Start();
+            }
+            catch (FlightException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Thread.Sleep(3000);
+            }
         }
+
 
         static City ChooseCity(List<City> flightCities)
         {
@@ -43,55 +54,131 @@ namespace ExamCS_PilotSimulator
             do
                 choice = int.Parse(Console.ReadLine());
             while (choice < 1 || choice > (int)PlaneTypes.EndingNoUsed);
-            return (PlaneTypes)choice;
+            return (PlaneTypes)(choice - 1);
         }
 
-        static void AddDispatcher(Flight flight, City startedCity)
+        static void AddDispatcher(Flight flight, City city)
         {
-            Console.WriteLine($"Доступные диспетчеры({startedCity.Name}): ");
-            for (int i = 0; i < startedCity.Dispatchers.Count; i++)
-                Console.WriteLine($"{i + 1}: {startedCity.Dispatchers[i].Name}");
+            Console.WriteLine($"Доступные диспетчеры({city.Name}): ");
+            for (int i = 0; i < city.Dispatchers.Count; i++)
+                Console.WriteLine($"{i + 1}: {city.Dispatchers[i].Name}");
             int choice;
             do
                 choice = int.Parse(Console.ReadLine());
-            while (choice < 1 || choice > startedCity.Dispatchers.Count);
-            flight.Dispatchers.Add(startedCity.Dispatchers[choice - 1]);
+            while (choice < 1 || choice > city.Dispatchers.Count);
+            city.Dispatchers[choice - 1].IsActive = true;
         }
 
-        static void Main(string[] args)
+        static Flight GetPreFlightInformation()
         {
-            var flightCities = GetCitiesData();
+            var flightCities = CitiseData.GetData();
 
             Console.WriteLine("Добро пожаловать в тренажер пилота самолета!\nВведите ваше имя пилот: ");
             var pilotName = Console.ReadLine();
+            Console.Clear();
 
             Console.WriteLine($"На каком самолете будете тренироваться? Достуны следующие самолеты:");
             var planeType = ChoosePlane();
+            Console.Clear();
 
             Console.WriteLine("Выберите место старта. Доступные города:");
             var startedCity = ChooseCity(flightCities);
-            Console.WriteLine("Выберите место финиша. Доступные города:");
+            Console.WriteLine("Выберите место финиша:");
             var finishedCity = ChooseCity(flightCities);
+            Console.Clear();
 
-            var flight = new Flight(new Plane(planeType), pilotName, startedCity, finishedCity);
-
-            Console.WriteLine($"{startedCity.Name} -> {finishedCity.Name}.\nОтлично, для начала полета надо связаться с диспетчерами точек отправления  и прибытия:");
-            AddDispatcher(flight, startedCity);
-            AddDispatcher(flight, finishedCity);
-
-            Console.ReadLine();
-
-            flight.Change += Flight_Change;
-            flight.Reccomented += Flight_Reccomented;
-            flight.Start();
+            return new Flight(new Plane(planeType), pilotName, startedCity, finishedCity);
         }
 
-        private static void Flight_Reccomented(object sender, ReccomentedEvent e)
+        public static void PrintMissionCompleted()
         {
-            Console.WriteLine($"Диспетчер {e.DispatcherName}({e.CityName}): рекомендованая высота: {e.ReccHeight}");
+            Console.WriteLine($"Задание выполнено. Посадите самолет.");
         }
 
-        private static void Flight_Change(object sender, FlightEvent e)
+        public static void PrintResult(int points)
+        {
+            Console.WriteLine($"Ваш результат: {points} штрафных очков.");
+        }
+
+        public static void PrintAddedPenaltyPoints(int points, string message)
+        {
+            Console.WriteLine($"+ {points} штрафных очков. {message}");
+        }
+
+        public static void PrintReccomendation(string dispatcherName, string cityName, int reccomentedHeihgt)
+        {
+            Console.WriteLine($"Диспетчер {dispatcherName}({cityName}): рекомендованая высота: {reccomentedHeihgt}");
+        }
+
+        private static void Flight_ChangeDispatcher(object sender, ChangeDispatcherArgs e)
+        {
+            Dispatcher firstActiveDispatcher = null;
+            Dispatcher secondActiveDispatcher = null;
+            List<Dispatcher> NoActiveDistpatchersInStartCity = new List<Dispatcher>();
+            List<Dispatcher> NoActiveDistpatchersInFinishedCity = new List<Dispatcher>();
+            Console.Clear();
+            Console.WriteLine("Какого диспетчера хотите сменить?");
+            foreach (var dispetcher in e.StatrCity.Dispatchers)
+            {
+                if (dispetcher.IsActive)
+                {
+                    firstActiveDispatcher = dispetcher;
+                    Console.WriteLine($"1 - {dispetcher.Name}({e.StatrCity.Name})");
+                }
+                else
+                    NoActiveDistpatchersInStartCity.Add(dispetcher);
+            }
+            foreach (var dispetcher in e.FinishedCity.Dispatchers)
+            {
+                if (dispetcher.IsActive)
+                {
+                    secondActiveDispatcher = dispetcher;
+                    Console.WriteLine($"2 - {dispetcher.Name}({e.FinishedCity.Name})");
+                }
+                else
+                    NoActiveDistpatchersInFinishedCity.Add(dispetcher);
+            }
+
+            int choice;
+            do
+                choice = int.Parse(Console.ReadLine());
+            while (choice < 1 || choice > 2);
+
+            if (choice == 1)
+            {
+                if (e.StatrCity.Dispatchers.Count > 1)
+                {
+                    ChangeDispatcher(NoActiveDistpatchersInStartCity);
+                    firstActiveDispatcher.IsActive = false;
+                }
+                else
+                    Console.WriteLine("Извините но в этом городе больше нет свободных диспетчеров");
+            }
+            else
+            {
+                if (e.FinishedCity.Dispatchers.Count > 1)
+                {
+                    secondActiveDispatcher.IsActive = false;
+                    ChangeDispatcher(NoActiveDistpatchersInFinishedCity);
+                }
+                else
+                    Console.WriteLine("Извините но в этом городе больше нет свободных диспетчеров");
+            }
+        }
+
+        private static void ChangeDispatcher(List<Dispatcher> dispatchers)
+        {
+            Console.WriteLine($"Свободные диспетчеры:");
+            for (int i = 0; i < dispatchers.Count; i++)
+                Console.WriteLine($"{i + 1}: {dispatchers[i].Name}");
+            int choice;
+            do
+                choice = int.Parse(Console.ReadLine());
+            while (choice < 1 || choice > dispatchers.Capacity);
+            dispatchers[choice - 1].IsActive = true;
+        }
+
+        private static void Flight_Change(object sender, ChangePlaneParamsArgs e)
         {
             Console.Clear();
             Console.WriteLine($"{e.Plane.PlaneType}: скорость: {e.Plane.Speed}, высота: {e.Plane.Height}");
