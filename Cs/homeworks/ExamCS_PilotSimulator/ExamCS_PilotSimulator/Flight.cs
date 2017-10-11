@@ -40,25 +40,28 @@ namespace ExamCS_PilotSimulator
 
             while (true)
             {
-                switch (Console.ReadKey().Key)
+                var key = Console.ReadKey();
+                var speedMultiplier = key.Modifiers.HasFlag(ConsoleModifiers.Shift) ? 3 : 1;
+                var heightMultiplier = key.Modifiers.HasFlag(ConsoleModifiers.Shift) ? 2 : 1;
+
+                Console.Clear();
+                switch (key.Key)
                 {
-                    case ConsoleKey.LeftArrow:
-                        //changeSpeed = x => x + 50;
-                        Plane.Speed += 50;
-                        break;
-                    case ConsoleKey.RightArrow:
-                        //changeSpeed = x => x - 50;
-                        if(Plane.Speed > 50)
-                            Plane.Speed -= 50;
-                        break;
                     case ConsoleKey.UpArrow:
-                        //changeHeignt = x => x + 250;
-                        Plane.Height += 250;
+                        Console.WriteLine($"+{250 * heightMultiplier} m");
+                        Plane.Speed += 250 * speedMultiplier;
                         break;
                     case ConsoleKey.DownArrow:
-                        //changeHeignt = x => x - 250;
-                        if (Plane.Height > 250)
-                            Plane.Height -= 250;
+                        Console.WriteLine($"-{250 * heightMultiplier} m");
+                        Plane.Speed -= 250 * speedMultiplier;
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        Console.WriteLine($"+{50 * speedMultiplier} km/h");
+                        Plane.Height += 50 * heightMultiplier;
+                        break;
+                    case ConsoleKey.RightArrow:
+                        Console.WriteLine($"-{50 * speedMultiplier} km/h");
+                        Plane.Height -= 50 * heightMultiplier;
                         break;
                     default:
                         break;
