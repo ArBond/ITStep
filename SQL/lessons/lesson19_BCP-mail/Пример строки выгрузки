@@ -1,0 +1,1 @@
+>bcp drova.dbo.Table_1 out d:\2.txt -S desktop-gqfn7pc\PC01 -c -T

@@ -1,0 +1,9 @@
+use msdb 
+go 
+exec msdb.dbo.sp_send_dbmail  @profile_name = 'Yauhen',  
+    @recipients = 'vladwoode@gmail.com',  
+    @body = 'Внимание, ошибка!',  
+    @subject = 'test subject ';  
+
+
+ select * from  sysmail_allitems
