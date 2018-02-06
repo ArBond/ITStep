@@ -1,7 +1,6 @@
 ﻿using System;
 using AForge.Video;
 using AForge.Video.DirectShow;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,6 +13,7 @@ using NAudio.Wave;
 
 namespace hw1_25._01._18_new
 {
+    [ObsoleteAttribute]
     public partial class Form1 : Form
     {
         private FilterInfoCollection videoDevices;
@@ -41,15 +41,16 @@ namespace hw1_25._01._18_new
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo device in videoDevices)
                 VideoDevicesComboBox.Items.Add(device.Name);
-            VideoDevicesComboBox.SelectedIndex = 0;
+            if(VideoDevicesComboBox.Items.Count != 0)
+                VideoDevicesComboBox.SelectedIndex = 0;
 
 
             //audio
             currentAudioDevice = new WaveIn();
-            currentAudioDevice.WaveFormat = new WaveFormat(8000, 32, 2);
+            currentAudioDevice.WaveFormat = new WaveFormat(8000, 32, 1);
 
             friendAudio = new WaveOut();
-            bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 32, 2));
+            bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 32, 1));
             //привязываем поток входящего звука к буферному потоку
             friendAudio.Init(bufferStream);
 
@@ -63,7 +64,8 @@ namespace hw1_25._01._18_new
             if (StartCameraButton.Text == "Turn on camera")
             {
                 activeVideoDevice = new VideoCaptureDevice(videoDevices[VideoDevicesComboBox.SelectedIndex].MonikerString);
-                activeVideoDevice.VideoResolution = activeVideoDevice.VideoCapabilities[2];
+                activeVideoDevice.VideoResolution = activeVideoDevice.VideoCapabilities[1];
+
                 activeVideoDevice.NewFrame += UpdateMyPictyreBox;
                 activeVideoDevice.Start();
 
@@ -95,11 +97,11 @@ namespace hw1_25._01._18_new
             if (ConnectButton.Text == "Connect")
             {
                 sendingUdpClient = new UdpClient();
+                sendingEndPoint = new IPEndPoint(Dns.GetHostAddresses("bondcher.hopto.org")[0], 90);
+                receivingUdpClient = new UdpClient(90);
 
-                sendingEndPoint = new IPEndPoint(IPAddress.Parse(IPAddressTextBox.Text), Int32.Parse(RemotePortTextBox.Text));
-                receivingUdpClient = new UdpClient(Int32.Parse(LocalPortTextBox.Text));
-                //sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.103"), 6000);
-                //receivingUdpClient = new UdpClient(9000);
+                //sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.101"), 6000);
+                //receivingUdpClient = new UdpClient(6000);
 
                 if (activeVideoDevice != null && activeVideoDevice.IsRunning == true)
                     activeVideoDevice.NewFrame += SendVideoBitmap;
@@ -135,6 +137,25 @@ namespace hw1_25._01._18_new
             }
         }
 
+        private void SendMessageButton_Click(object sender, EventArgs e)
+        {
+            if (SendingMessageTextBox.Text.Length == 0)
+                return;
+            var textMessage = SendingMessageTextBox.Text;
+            ChatTextBox.AppendText("\r\nMe  " + DateTime.Now.ToShortTimeString() + " :\r\n" + textMessage + "\r\n");
+            SendingMessageTextBox.Clear();
+            SendTextMessage(textMessage);
+        }
+
+        private void SendTextMessage(string textMessage)
+        {
+            byte[] type = Encoding.UTF8.GetBytes("tMessage");
+            byte[] sendingPackage = Encoding.UTF8.GetBytes(textMessage);
+            Array.Resize(ref sendingPackage, sendingPackage.Length + 24);
+            type.CopyTo(sendingPackage, textMessage.Length);
+            sendingUdpClient?.Send(sendingPackage, sendingPackage.Length, sendingEndPoint);
+        }
+
         private void SendAudio(object sender, WaveInEventArgs e)
         {
             byte[] sendingAudioBuff = e.Buffer;
@@ -147,27 +168,38 @@ namespace hw1_25._01._18_new
 
         private void SendVideoBitmap(object sender, NewFrameEventArgs eventArgs)
         {
+            int bitmapPieceSize = 1000;
             try
             {
                 using (var stream = new MemoryStream())
                 {
                     var picture = eventArgs.Frame;
-                    picture.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                    picture.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
                     byte[] bitMapArray = stream.ToArray();
-                    byte[] packageToSend = new byte[1024];
+                    byte[] packageToSend = new byte[bitmapPieceSize + 24];
 
                     int packageCounter = 0;
-                    for (int i = 0; i < bitMapArray.Length - 1000; i += 1000)
+                    byte[] bytePackageCounter;
+                    byte[] type = Encoding.UTF8.GetBytes("camVideo");
+                    int i = 0;
+                    for (; i < bitMapArray.Length - bitmapPieceSize; i += bitmapPieceSize)
                     {
-                        byte[] bytePackageCounter = Encoding.UTF8.GetBytes(packageCounter.ToString().ToArray());
-                        byte[] type = Encoding.UTF8.GetBytes("camVideo");
-                        Array.Copy(bitMapArray, i, packageToSend, 0, 1000);
-                        type.CopyTo(packageToSend, 1000);
-                        bytePackageCounter.CopyTo(packageToSend, 1008);
-                        sendingUdpClient?.Send(packageToSend, 1024, sendingEndPoint);
+                        bytePackageCounter = Encoding.UTF8.GetBytes(packageCounter.ToString().ToArray());
+                        Array.Copy(bitMapArray, i, packageToSend, 0, bitmapPieceSize);
+                        type.CopyTo(packageToSend, bitmapPieceSize);
+                        bytePackageCounter.CopyTo(packageToSend, bitmapPieceSize + 8);
+                        sendingUdpClient?.Send(packageToSend, bitmapPieceSize + 24, sendingEndPoint);
 
                         packageCounter++;
                     }
+                    var lastPackageLength = bitMapArray.Length - i + 24;
+                    Array.Resize(ref packageToSend, lastPackageLength);
+                    Array.Clear(packageToSend, 0, packageToSend.Length);
+                    bytePackageCounter = Encoding.UTF8.GetBytes(packageCounter.ToString().ToArray());
+                    Array.Copy(bitMapArray, i, packageToSend, 0, lastPackageLength - 24);
+                    type.CopyTo(packageToSend, lastPackageLength - 24);
+                    bytePackageCounter.CopyTo(packageToSend, lastPackageLength - 16);
+                    sendingUdpClient?.Send(packageToSend, lastPackageLength, sendingEndPoint);
                 }
             }
             catch (Exception ex)
@@ -182,11 +214,11 @@ namespace hw1_25._01._18_new
             int lastVideoPackage = 0;
             int currentVideoPackage = 0;
 
-            try
+            using (var memStream = new MemoryStream())
             {
-                using (var stream = new MemoryStream())
+                while (true)
                 {
-                    while (true)
+                    try
                     {
                         byte[] receiveBytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
                         Array.Copy(receiveBytes, receiveBytes.Length - 24, inputType, 0, 8);
@@ -194,40 +226,42 @@ namespace hw1_25._01._18_new
                         // video
                         if (Encoding.UTF8.GetString(inputType) == "camVideo")
                         {
+                            currentVideoPackage = Convert.ToInt32(Encoding.UTF8.GetString(receiveBytes, receiveBytes.Length - 16, 16));
                             if (currentVideoPackage < lastVideoPackage)
                             {
-                                friendsPictureBox.Image = new Bitmap(stream);
-                                stream.SetLength(0);
+                                friendsPictureBox.Image = new Bitmap(memStream);
+                                memStream.SetLength(0);
                             }
                             lastVideoPackage = currentVideoPackage;
-                            currentVideoPackage = Convert.ToInt32(Encoding.UTF8.GetString(receiveBytes, 1008, 16));
-                            stream.WriteAsync(receiveBytes, 0, 1000);
+                            memStream.WriteAsync(receiveBytes, 0, receiveBytes.Length - 24);
                         }
 
                         //audio 
-                        else if(Encoding.UTF8.GetString(inputType) == "micAudio")
+                        else if (Encoding.UTF8.GetString(inputType) == "micAudio")
                         {
                             bufferStream.AddSamples(receiveBytes, 0, receiveBytes.Length - 24);
                         }
 
                         //message
-                        else if (Encoding.UTF8.GetString(inputType) == "message")
+                        else if (Encoding.UTF8.GetString(inputType) == "tMessage")
                         {
-                            // will be later
+                            var message = Encoding.UTF8.GetString(receiveBytes, 0, receiveBytes.Length - 24);
+                            ChatTextBox.AppendText("\r\nFriend  " + DateTime.Now.ToShortTimeString() + " :\r\n" + message + "\r\n");
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        lastVideoPackage = 0;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
             }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             activeVideoDevice?.SignalToStop();
-            sendingUdpClient?.Close();
             receivingUdpClient?.Close();
+            receivingThread?.Abort();
             currentAudioDevice.StopRecording();
         }
     }
