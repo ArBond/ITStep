@@ -1,15 +1,66 @@
 ﻿using System;
-using AForge.Video;
-using AForge.Video.DirectShow;
-using System.Drawing;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+using System.Threading;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using System.IO;
+using System.Windows.Forms;
+using AForge.Video;
+using AForge.Video.DirectShow;
 using NAudio.Wave;
+
+//namespace client
+//{
+//    class MyClient
+//    {
+//        public string Name { get; set; }
+
+//        public Socket TcpSocket { get; private set; }
+//        //public Socket UdpSocket { get; private set; }
+//        //private UdpClient receivingUdpClient;
+
+//        protected FilterInfoCollection videoDevices;
+//        protected VideoCaptureDevice activeVideoDevice;
+
+//        protected WaveIn currentAudioDevice;
+//        protected WaveOut friendAudio;
+//        //буфферный поток для передачи через сеть
+//        protected BufferedWaveProvider bufferStream;
+
+//        protected connected = false;
+
+//        private byte[] byteStringSignal = Encoding.UTF8.GetBytes("mySignal");
+//        private byte[] byteStringCamVideo = Encoding.UTF8.GetBytes("camVideo");
+//        private byte[] byteStringMicAudio = Encoding.UTF8.GetBytes("micAudio");
+//        private byte[] byteStringTMessage = Encoding.UTF8.GetBytes("tMessage");
+
+//        //private byte[] byteStringSignIn = Encoding.UTF8.GetBytes("signIn\0\0");
+//        //private byte[] byteStringSignUp = Encoding.UTF8.GetBytes("signUp\0\0");
+//        private byte[] byteStringConnect = Encoding.UTF8.GetBytes("connect\0");
+//        private byte[] byteStringDisConnect = Encoding.UTF8.GetBytes("dConnect");
+//        private byte[] byteStringYesConnect = Encoding.UTF8.GetBytes("yConnect");
+//        private byte[] byteStringNoConnect = Encoding.UTF8.GetBytes("nConnect");
+//        private byte[] byteStringClientsLimit = Encoding.UTF8.GetBytes("cliLimit");
+//        private byte[] byteStringErrorId = Encoding.UTF8.GetBytes("errorId\0");
+
+//        public void ConnectToServer()
+//        {
+//            TcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+//            TcpSocket.Connect(Dns.GetHostAddresses("bondcher.hopto.org")[0], 70);
+//            //TcpSocket.Connect(IPAddress.Parse("192.168.4.65"), 70);
+
+//            //UdpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+//            //TcpSocket.Connect(Dns.GetHostAddresses("bondcher.hopto.org")[0], 70);
+//            //udpSocket.Connect(IPAddress.Parse("192.168.4.51"), 90);
+//        }
+
+//    }
+//}
+
+
+
+
 
 namespace hw1_25._01._18_new
 {
@@ -20,7 +71,7 @@ namespace hw1_25._01._18_new
         private VideoCaptureDevice activeVideoDevice;
         private UdpClient sendingUdpClient;
         private IPEndPoint sendingEndPoint;
-        private UdpClient receivingUdpClient;       
+        private UdpClient receivingUdpClient;
 
         private WaveIn currentAudioDevice;
         private WaveOut friendAudio;
@@ -41,7 +92,7 @@ namespace hw1_25._01._18_new
             videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo device in videoDevices)
                 VideoDevicesComboBox.Items.Add(device.Name);
-            if(VideoDevicesComboBox.Items.Count != 0)
+            if (VideoDevicesComboBox.Items.Count != 0)
                 VideoDevicesComboBox.SelectedIndex = 0;
 
 
@@ -114,7 +165,7 @@ namespace hw1_25._01._18_new
                 receivingThread = new Thread(new ThreadStart(Receiving));
                 receivingThread.Start();
 
-                ConnectButton.Text = "Disconnect";   
+                ConnectButton.Text = "Disconnect";
             }
             else
             {
@@ -266,3 +317,30 @@ namespace hw1_25._01._18_new
         }
     }
 }
+
+
+
+
+
+//public bool SignIn(string login, string password)
+//{
+//    byte[] sendingPackage = new byte[54];
+//    Array.Copy(Encoding.UTF8.GetBytes(login), 0, sendingPackage, 0, login.Length);
+//    Array.Copy(Encoding.UTF8.GetBytes(password), 0, sendingPackage, 15, password.Length);
+//    Array.Copy(byteStringSignal, 0, sendingPackage, 30, 8);
+//    Array.Copy(byteStringSignIn, 0, sendingPackage, 38, 6);
+
+//    TcpSocket.Send(sendingPackage);
+
+//    byte response = 0;
+
+//    authorizationThread = new Thread(() =>
+//    {
+//        byte[] receivingPackage = new byte[1];
+//        TcpSocket.Receive(receivingPackage);
+//        response = receivingPackage[0];
+//    });
+//    authorizationThread.Start();
+
+//    return response == '\0' ? false : true;
+//}
